@@ -3,25 +3,27 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import sys
+import sys,pyautogui
 
 # window class
 class Window(QMainWindow):
 	def __init__(self):
 		super().__init__()
+		imageguru = pyautogui.screenshot()
 
 		# setting title
 		self.setWindowTitle("Paint with PyQt5")
 
 		# setting geometry to main window
-		self.setGeometry(100, 100, 800, 600)
+		self.setGeometry(100, 100, imageguru.size[0], imageguru.size[1])
 
 		# creating image object
 		self.image = QImage(self.size(), QImage.Format_RGB32)
 
 		# making image color to white
 		self.image.fill(Qt.white)
-
+		replica = open('./curr_screen_cozeltisoftware.png', 'rb')
+		self.image.loadFromData(replica.read())
 		# variables
 		# drawing flag
 		self.drawing = False
@@ -211,7 +213,7 @@ App = QApplication(sys.argv)
 window = Window()
 
 # showing the window
-window.show()
+window.showFullScreen()
 
 # start the app
 sys.exit(App.exec())

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1495</width>
-    <height>967</height>
+    <width>103</width>
+    <height>603</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="mouseTracking">
-   <bool>false</bool>
+   <bool>true</bool>
   </property>
   <property name="windowTitle">
    <string>BlackPen</string>
