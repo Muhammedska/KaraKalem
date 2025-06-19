@@ -1,0 +1,178 @@
+[2025-06-18 23:52:23] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.png
+--------------------------------------------------
+
+[2025-06-19 00:04:39] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.png
+--------------------------------------------------
+
+[2025-06-19 00:04:48] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 00:06:58] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.png
+--------------------------------------------------
+
+[2025-06-19 00:07:08] Hata: Araç UI dosyası 'D:\gitrepos\KaraKalem\data\pen_tool.ui' yüklenirken hata oluştu: not well-formed (invalid token): line 7, column 10
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1003, in __init__
+    uic.loadUi(ui_path, self)  # Load the UI from the .ui file
+  File "C:\python\lib\site-packages\PyQt5\uic\__init__.py", line 241, in loadUi
+    return DynamicUILoader(package).loadUi(uifile, baseinstance, resource_suffix)
+  File "C:\python\lib\site-packages\PyQt5\uic\Loader\loader.py", line 66, in loadUi
+    return self.parse(filename, resource_suffix)
+  File "C:\python\lib\site-packages\PyQt5\uic\uiparser.py", line 1020, in parse
+    document = parse(filename)
+  File "C:\python\lib\xml\etree\ElementTree.py", line 1202, in parse
+    tree.parse(source, parser)
+  File "C:\python\lib\xml\etree\ElementTree.py", line 595, in parse
+    self._root = parser._parse_whole(source)
+  File "<string>", line None
+xml.etree.ElementTree.ParseError: not well-formed (invalid token): line 7, column 10
+--------------------------------------------------
+
+[2025-06-19 00:07:22] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.png
+--------------------------------------------------
+
+[2025-06-19 00:07:24] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 00:11:04] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.png
+--------------------------------------------------
+
+[2025-06-19 00:11:06] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/cross_24.png (Anahtar: region_select). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/hand_open_24.png (Anahtar: move_active). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/hand_closed_24.png (Anahtar: move_inactive). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/pen_24.png (Anahtar: pen). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/eraser_24.png (Anahtar: eraser). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/line_24.png (Anahtar: line). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/rect_24.png (Anahtar: rect). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/ellipse_24.png (Anahtar: ellipse). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/highlight_24.png (Anahtar: highlight). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/resize_br_24.png (Anahtar: resize_br). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:25:29] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 00:25:31] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/arrow.png (Anahtar: default). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/pen.png (Anahtar: pen). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/eraser.png (Anahtar: eraser). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/highlighter.png (Anahtar: highlight). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/crosshair.png (Anahtar: line). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/crosshair.png (Anahtar: rect). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/crosshair.png (Anahtar: ellipse). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/closed_hand.png (Anahtar: move_active). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/open_hand.png (Anahtar: move_inactive). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/resize_diag.png (Anahtar: resize_br). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/crosshair.png (Anahtar: region_select). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/ibeam.png (Anahtar: text_input). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/wait.png (Anahtar: wait). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: İmleç görseli yüklenemedi: D:\gitrepos\KaraKalem\data\cursors/forbidden.png (Anahtar: forbidden). Varsayılan ok kullanılacak.
+--------------------------------------------------
+
+[2025-06-19 00:26:28] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 00:26:30] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 00:29:22] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 00:29:24] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 00:34:03] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 00:34:05] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 00:34:14] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 08:53:27] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 08:53:29] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 08:58:06] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 08:58:08] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 08:59:05] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 09:03:01] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 09:03:04] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 09:22:42] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 09:22:56] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 09:23:19] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 09:23:55] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 09:24:17] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+

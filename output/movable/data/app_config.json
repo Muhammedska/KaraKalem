@@ -1,0 +1,21 @@
+{
+  "main_ui_file": "undockapp.ui",
+  "tool_ui_file": "pen_tool.ui",
+  "app_icon_path": "icons/app_icon.ico",
+  "pen_colors": [
+    "#FF0000",
+    "#0000FF",
+    "#000000",
+    "#008000",
+    "#FFA500",
+    "#800080"
+  ],
+  "main_window_position": {
+    "x": 100,
+    "y": 100
+  },
+  "tool_window_position": {
+    "x_offset_from_paint_window": -140,
+    "y_offset_from_paint_window": 20
+  }
+}

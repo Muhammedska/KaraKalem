@@ -11,7 +11,7 @@ import win32gui
 
 
 from PIL import Image
-from PIL.ImageQt import ImageQt
+from PIL import ImageQt
 import pyautogui
 
 class Ui(QtWidgets.QMainWindow):
@@ -20,7 +20,8 @@ class Ui(QtWidgets.QMainWindow):
 
         uic.loadUi('./data/undockapp.ui',self)
         #self.setWindowFlags(Qt.FramelessWindowHint)
-        #self.setAttribute(Qt.WA_TranslucentBackground)
+        #
+        self.setAttribute(Qt.WA_TranslucentBackground)
 
 
         #self.setWindowFlags(Qt.WindowStaysOnTopHint)

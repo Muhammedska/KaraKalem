@@ -1,0 +1,12 @@
+[2025-06-19 09:42:16] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\output\movable\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 09:42:18] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-19 09:43:47] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\output\movable\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-19 09:44:23] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+

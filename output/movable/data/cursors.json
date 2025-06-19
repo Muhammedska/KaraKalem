@@ -1,0 +1,15 @@
+{
+  "default": "ArrowCursor",
+  "pen": { "image_path": "cursors/pen-solid.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 32 },
+  "eraser":  { "image_path": "cursors/eraser.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 64 },
+  "highlight": { "image_path": "cursors/highlighter.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 64 },
+  "line": { "image_path": "cursors/line.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 64 },
+  "rect": { "image_path": "cursors/rectangle.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 64 },
+  "ellipse": { "image_path": "cursors/circle.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 64 },
+  "move_active": { "image_path": "cursors/move.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 64 },
+  "move_inactive": { "image_path": "cursors/hand.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 64 },
+  "resize_br": { "image_path": "cursors/resize.svg", "hotspot_x": 1, "hotspot_y": 20, "size": 64 },
+  "text_input": "IBeamCursor",
+  "wait": "WaitCursor",
+  "forbidden": "ForbiddenCursor"
+}

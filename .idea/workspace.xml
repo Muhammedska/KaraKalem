@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="48dd1f45-0a4b-48c9-bd55-b1bfc6ae5988" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,21 +23,50 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="25QGgU0KjNRsDEwXXo49QEI1VTI" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="exceleditor.install" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/5nokta.py" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.5nokta.executor": "Run",
+    "Python.app deep seek.executor": "Run",
+    "Python.app.executor": "Run",
+    "Python.app_deep_seek.executor": "Run",
+    "Python.app_deep_seek2.executor": "Run",
+    "Python.app_deep_seek2_regionss.executor": "Run",
+    "Python.app_deep_seek2_vpro_demo_geri.executor": "Run",
+    "Python.deepseek denemesi.executor": "Run",
+    "Python.deepseek denemesiv2.executor": "Run",
+    "Python.gemini revize.executor": "Run",
+    "Python.karakalem.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.mdebug.executor": "Run",
+    "Python.movable.executor": "Run",
+    "Python.opt.executor": "Run",
+    "Python.region_moded.executor": "Run",
+    "Python.test.executor": "Run",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "D:/gitrepos/KaraKalem/output"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\gitrepos\KaraKalem\output" />
+      <recent name="D:\gitrepos\KaraKalem\data" />
+      <recent name="D:\gitrepos\KaraKalem\data\cursors" />
+      <recent name="D:\gitrepos\KaraKalem" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.5nokta">
+  <component name="RunManager">
     <configuration name="5nokta" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="KaraKalem" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -56,6 +88,7 @@
     </configuration>
     <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="KaraKalem" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -77,6 +110,7 @@
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="KaraKalem" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -107,6 +141,13 @@
         <item itemvalue="Python.main" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
