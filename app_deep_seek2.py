@@ -16,7 +16,7 @@ class Ui(QMainWindow):
         super().__init__()
 
         # .ui dosyasının varlığını kontrol et
-        ui_path = './data/undockapp.ui'
+        ui_path = 'datam/undockapp.ui'
         if not os.path.exists(ui_path):
             QMessageBox.critical(self, "Hata", f"UI dosyası bulunamadı: {ui_path}")
             sys.exit(1)
@@ -287,7 +287,7 @@ class ToolWindowold(QWidget):
         self.setFixedSize(120, 440)  # Yükseklik biraz artırdık spinbox için
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
 
-        ui_path = './data/pen_tool.ui'
+        ui_path = 'datam/pen_tool.ui'
         if not os.path.exists(ui_path):
             QMessageBox.critical(self, "Hata", f"UI dosyası bulunamadı: {ui_path}")
             sys.exit(1)
@@ -341,7 +341,7 @@ class ToolWindow(QWidget):
         self.setFixedSize(120, 440)
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
 
-        ui_path = './data/pen_tool.ui'
+        ui_path = 'datam/pen_tool.ui'
         if not os.path.exists(ui_path):
             QMessageBox.critical(self, "Hata", f"UI dosyası bulunamadı: {ui_path}")
             sys.exit(1)

@@ -1,0 +1,975 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PenTools</class>
+ <widget class="QWidget" name="PenTools">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>200</width> <!-- Genişlik artırıldı -->
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>200</width> <!-- Minimum genişlik artırıldı -->
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Kalem Araçları</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #2d2f36;
+    border-radius: 12px;
+    color: #f0f0f0;
+    font-family: 'Segoe UI', sans-serif;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <property name="leftMargin">
+    <number>15</number>
+   </property>
+   <property name="topMargin">
+    <number>15</number>
+   </property>
+   <property name="rightMargin">
+    <number>15</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
+   <item>
+    <layout class="QGridLayout" name="toolsGrid">
+     <property name="spacing">
+      <number>10</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pen_btn">
+       <property name="toolTip">
+        <string>Kalem</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #4dabf7;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/pen-solid.svg</normaloff>cursors/pen-solid.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="eraser_btn">
+       <property name="toolTip">
+        <string>Silgi</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #4dabf7;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/eraser.svg</normaloff>cursors/eraser.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="line_btn">
+       <property name="toolTip">
+        <string>Çizgi</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #4dabf7;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/line.svg</normaloff>cursors/line.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="rect_btn">
+       <property name="toolTip">
+        <string>Dikdörtgen</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #4dabf7;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/rectangle.svg</normaloff>cursors/rectangle.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="ellipse_btn">
+       <property name="toolTip">
+        <string>Elips</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #4dabf7;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/circle.svg</normaloff>cursors/circle.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="highlight_btn">
+       <property name="toolTip">
+        <string>Vurgulayıcı</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #4dabf7;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/highlighter.svg</normaloff>cursors/highlighter.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="penSizeGroup">
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+    border: 1px solid #3a3d46;
+    border-radius: 8px;
+    margin-top: 10px;
+    padding-top: 20px;
+    color: #a0a0a0;
+    font-size: 10pt;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 0 5px;
+}</string>
+     </property>
+     <property name="title">
+      <string>Kalem Boyutu</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>10</number>
+      </property>
+      <property name="topMargin">
+       <number>10</number>
+      </property>
+      <property name="rightMargin">
+       <number>10</number>
+      </property>
+      <property name="bottomMargin">
+       <number>10</number>
+      </property>
+      <item>
+       <widget class="QSlider" name="horizontalSlider">
+        <property name="styleSheet">
+         <string notr="true">QSlider::groove:horizontal {
+    background: #3a3d46;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #4dabf7;
+    width: 16px;
+    height: 16px;
+    margin: -5px 0;
+    border-radius: 8px;
+}
+
+QSlider::handle:horizontal:hover {
+    background: #339af0;
+    width: 18px;
+    height: 18px;
+    margin: -6px 0;
+}
+
+QSlider::sub-page:horizontal {
+    background: #4dabf7;
+    border-radius: 3px;
+}</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>50</number>
+        </property>
+        <property name="value">
+         <number>5</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="eraserSizeGroup">
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+    border: 1px solid #3a3d46;
+    border-radius: 8px;
+    margin-top: 5px;
+    padding-top: 20px;
+    color: #a0a0a0;
+    font-size: 10pt;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 0 5px;
+}</string>
+     </property>
+     <property name="title">
+      <string>Silgi Boyutu</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>10</number>
+      </property>
+      <property name="topMargin">
+       <number>10</number>
+      </property>
+      <property name="rightMargin">
+       <number>10</number>
+      </property>
+      <property name="bottomMargin">
+       <number>10</number>
+      </property>
+      <item>
+       <widget class="QSlider" name="eraser_slider">
+        <property name="styleSheet">
+         <string notr="true">QSlider::groove:horizontal {
+    background: #3a3d46;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #ff6b6b;
+    width: 16px;
+    height: 16px;
+    margin: -5px 0;
+    border-radius: 8px;
+}
+
+QSlider::handle:horizontal:hover {
+    background: #ff4757;
+    width: 18px;
+    height: 18px;
+    margin: -6px 0;
+}
+
+QSlider::sub-page:horizontal {
+    background: #ff6b6b;
+    border-radius: 3px;
+}</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>50</number>
+        </property>
+        <property name="value">
+         <number>15</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="colorGroup">
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+    border: 1px solid #3a3d46;
+    border-radius: 8px;
+    margin-top: 5px;
+    padding-top: 20px;
+    color: #a0a0a0;
+    font-size: 10pt;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 0 5px;
+}</string>
+     </property>
+     <property name="title">
+      <string>Renkler</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QGridLayout" name="colorGrid">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="color_red">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Kırmızı</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #ff6b6b;
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+QPushButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(255, 107, 107, 0.7);
+}
+QPushButton:pressed {
+    transform: scale(0.95);
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="color_blue">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Mavi</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #4dabf7;
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+QPushButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(77, 171, 247, 0.7);
+}
+QPushButton:pressed {
+    transform: scale(0.95);
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="color_black">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Siyah</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #343a40;
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+QPushButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(52, 58, 64, 0.7);
+}
+QPushButton:pressed {
+    transform: scale(0.95);
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="color_green">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Yeşil</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #51cf66;
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+QPushButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(81, 207, 102, 0.7);
+}
+QPushButton:pressed {
+    transform: scale(0.95);
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="color_custom1">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Sarı</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #ff922b;
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+QPushButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(255, 146, 43, 0.7);
+}
+QPushButton:pressed {
+    transform: scale(0.95);
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="color_custom2">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Mor</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #cc5de8;
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+QPushButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(204, 93, 232, 0.7);
+}
+QPushButton:pressed {
+    transform: scale(0.95);
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="selected_color_indicator">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>10</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>15</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #ff6b6b;
+border-radius: 5px;
+border: 1px solid #4a4d56;
+margin: 5px 20px;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="actionGrid">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMinimumSize</enum>
+     </property>
+     <property name="horizontalSpacing">
+      <number>10</number> <!-- Yatay boşluğu azalttım -->
+     </property>
+     <property name="verticalSpacing">
+      <number>10</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="undo">
+       <property name="toolTip">
+        <string>Geri Al</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 6px;
+    padding: 8px; /* Simetrik padding */
+    border: none;
+    text-align: center; /* İkonu ortalamak için */
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #2a2d36;
+}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/redo.svg</normaloff>cursors/redo.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="redo">
+       <property name="toolTip">
+        <string>İleri Al</string>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 6px;
+    padding: 8px; /* Simetrik padding */
+    border: none;
+    text-align: center; /* İkonu ortalamak için */
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #2a2d36;
+}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/undo.svg</normaloff>cursors/undo.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QPushButton" name="load_commands_btn">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Komutları Yükle</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #3a3d46;
+    border-radius: 6px;
+    padding: 8px 12px; /* Dikey ve yatay padding */
+    border: none;
+    text-align: left;
+}
+QPushButton:hover {
+    background-color: #4a4d56;
+}
+QPushButton:pressed {
+    background-color: #2a2d36;
+}</string>
+       </property>
+       <property name="text">
+        <string>Komutları Yükle</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/reload.svg</normaloff>cursors/reload.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="clear_all_btn">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Tümünü Temizle</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #ff6b6b;
+    border-radius: 6px;
+    padding: 8px;
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #ff4757;
+}
+QPushButton:pressed {
+    background-color: #e53e3e;
+}</string>
+       </property>
+       <property name="text">
+        <string>Temizle</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>cursors/trash.svg</normaloff>cursors/trash.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="exit_btn">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Çıkış</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: #4dabf7;
+    border-radius: 6px;
+    padding: 8px;
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #339af0;
+}
+QPushButton:pressed {
+    background-color: #228be6;
+}</string>
+       </property>
+       <property name="text">
+        <string>Çıkış</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>circle-xmark-solid.svg</normaloff>circle-xmark-solid.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="maximumSize">
+      <size>
+       <width>80</width>
+       <height>80</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>logo.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

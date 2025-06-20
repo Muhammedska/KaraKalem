@@ -19,7 +19,7 @@ class Ui(QMainWindow):
         super().__init__()
 
         # .ui dosyasının varlığını kontrol et
-        ui_path = './data/undockapp.ui'
+        ui_path = 'datam/undockapp.ui'
         if not os.path.exists(ui_path):
             QMessageBox.critical(self, "Hata", f"UI dosyası bulunamadı: {ui_path}")
             sys.exit(1)

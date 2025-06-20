@@ -5,9 +5,9 @@ import json
 import datetime
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QComboBox, QMessageBox, QFrame, QPushButton, \
-    QSlider
-from PyQt5.QtCore import Qt, QPoint, QRect, QSize, QTimer
-from PyQt5.QtGui import QColor, QPen, QPainter, QImage, QPixmap, QCursor, QIcon
+    QSlider, QFileDialog, QColorDialog  # QColorDialog'u import et
+from PyQt5.QtCore import Qt, QPoint, QRect, QSize, QTimer, QBuffer, QByteArray
+from PyQt5.QtGui import QColor, QPen, QPainter, QImage, QPixmap, QCursor, QIcon, qAlpha, qRed, qGreen, qBlue
 
 # Conditional import for Windows-specific modules
 try:
@@ -19,8 +19,20 @@ try:
     WIN_SPECIFIC_IMPORTS_AVAILABLE = True
 except ImportError:
     WIN_SPECIFIC_IMPORTS_AVAILABLE = False
+    # Warning for missing Windows-specific modules, always print
     print(
         "Warning: win32api, win32con, win32gui, or PIL not found. Windows-specific features (transparency, ImageGrab) will be disabled.")
+
+# Global debug flag, controlled by app_config.json
+_DEBUG_MODE_ENABLED = False
+
+
+def _debug_print(*args, **kwargs):
+    """
+    Prints messages only if _DEBUG_MODE_ENABLED is True.
+    """
+    if _DEBUG_MODE_ENABLED:
+        print("DEBUG:", *args, **kwargs)
 
 
 def log_error(error_message, exception_info=None):
@@ -40,7 +52,66 @@ def log_error(error_message, exception_info=None):
             f.write("Hata Detayı:\n")
             f.write(traceback.format_exc())
         f.write("-" * 50 + "\n\n")
+    # Always print error messages
     print(f"Hata günlüğe kaydedildi: {error_message}")
+
+
+def _check_qimage_for_visible_content(image: QImage) -> bool:
+    """
+    Checks if a QImage contains any non-transparent or non-zero color pixels.
+    Returns True if visible content is found, False otherwise.
+    """
+    if image.isNull():
+        _debug_print("Image is null, no visible content.")
+        return False
+
+    # For ARGB32, transparent is 0x00000000. Any other value indicates content.
+    # We will directly check the raw pixel data for non-zero bytes.
+    if image.format() == QImage.Format_ARGB32:
+        try:
+            # Access raw pixel data as a memoryview and check for any non-zero byte
+            # This is a faster and more robust check for ARGB32 images.
+            data = image.constBits().asarray(image.byteCount())
+            if any(byte != 0 for byte in data):
+                _debug_print("ARGB32 image has non-zero bytes, visible content found.")
+                return True
+            else:
+                _debug_print("ARGB32 image contains only zero bytes (fully transparent).")
+                return False
+        except Exception as e:
+            # Fallback to pixel-by-pixel if raw access fails for some reason
+            _debug_print(f"Error accessing raw image bits ({e}), falling back to pixel-by-pixel check.")
+            log_error(f"Error accessing raw image bits in _check_qimage_for_visible_content: {e}", sys.exc_info())
+
+    # Fallback/general pixel-by-pixel check for other formats or if raw access failed
+    if image.hasAlphaChannel():
+        for y in range(image.height()):
+            for x in range(image.width()):
+                pixel_rgb = image.pixel(x, y)
+                alpha = qAlpha(pixel_rgb)
+                if alpha != 0:
+                    # Also check if color components are not all zero, to exclude transparent black on transparent background.
+                    # However, if alpha is non-zero, it usually means it's visible.
+                    # We prioritize alpha being non-zero for 'visible content' as per Qt's transparency model.
+                    if qRed(pixel_rgb) != 0 or qGreen(pixel_rgb) != 0 or qBlue(pixel_rgb) != 0:
+                        _debug_print(f"Pixel-by-pixel: Visible alpha {alpha} and color at ({x},{y})")
+                        return True
+                    elif alpha == 255:  # Fully opaque black is also visible content
+                        if qRed(pixel_rgb) == 0 and qGreen(pixel_rgb) == 0 and qBlue(pixel_rgb) == 0:
+                            _debug_print(f"Pixel-by-pixel: Fully opaque black found at ({x},{y})")
+                            return True
+        _debug_print("Image with alpha channel: no visible alpha or non-black opaque content found.")
+        return False
+    else:
+        # For images without alpha, check for any non-black pixel
+        for y in range(image.height()):
+            for x in range(image.width()):
+                pixel_rgb = image.pixel(x, y)
+                if qRed(pixel_rgb) != 0 or qGreen(pixel_rgb) != 0 or qBlue(pixel_rgb) != 0:
+                    _debug_print(f"Pixel-by-pixel: Visible color at ({x},{y})")
+                    return True
+        _debug_print("Image without alpha channel: only black pixels found.")
+        return False
 
 
 class CursorManager:
@@ -62,6 +133,7 @@ class CursorManager:
         """
         if not cls._base_path:
             error_msg = "Hata: İmleç görselleri için temel yol ayarlanmadı. Lütfen CursorManager.set_base_path() çağırın."
+            # Always print errors
             print(error_msg)
             log_error(error_msg)
             return
@@ -81,9 +153,10 @@ class CursorManager:
                             # Pixmap'ı belirtilen boyuta ölçeklendir
                             scaled_pixmap = pixmap.scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                             cls._cursors[key] = QCursor(scaled_pixmap, hotspot_x, hotspot_y)
-                            # print(f"İmleç yüklendi: {key} -> {image_file}, Boyut: {size}x{size}")
+                            # _debug_print(f"İmleç yüklendi: {key} -> {image_file}, Boyut: {size}x{size}")
                         else:
                             error_msg = f"Uyarı: İmleç görseli yüklenemedi: {image_file} (Anahtar: {key}). Varsayılan ok kullanılacak."
+                            # Always print warnings
                             print(error_msg)
                             log_error(error_msg)
                             cls._cursors[key] = QCursor(Qt.ArrowCursor)  # Yüklenemezse varsayılan
@@ -92,21 +165,25 @@ class CursorManager:
                         cls._cursors[key] = QCursor(getattr(Qt, cursor_info))
                     else:
                         error_msg = f"Uyarı: Geçersiz imleç tanımı '{key}' JSON'da bulundu. Varsayılan ok kullanılacak."
+                        # Always print warnings
                         print(error_msg)
                         log_error(error_msg)
                         cls._cursors[key] = QCursor(Qt.ArrowCursor)
 
-                print(f"İmleçler '{json_path}' dosyasından başarıyla yüklendi.")
+                _debug_print(f"İmleçler '{json_path}' dosyasından başarıyla yüklendi.")
         except FileNotFoundError:
             error_msg = f"Hata: İmleç dosyası bulunamadı: {json_path}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
         except json.JSONDecodeError:
             error_msg = f"Hata: İmleç dosyası geçersiz JSON formatında: {json_path}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
         except Exception as e:
             error_msg = f"İmleçler yüklenirken bir hata oluştu: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
 
@@ -117,6 +194,10 @@ class CursorManager:
         Tanımsız ise varsayılan oku döndürür.
         """
         return cls._cursors.get(cursor_name, QCursor(Qt.ArrowCursor))  # Yüklenmemişse standart Qt oku
+
+
+_SCRIPT_DIR = os.path.dirname(__file__)
+_AUTO_SAVE_DRAWING_FILE = os.path.join(_SCRIPT_DIR, 'data', 'auto_saved_drawing.txt')
 
 
 class Ui(QMainWindow):
@@ -179,21 +260,45 @@ class Ui(QMainWindow):
             }
         """)
         self.setAttribute(Qt.WA_TranslucentBackground)  # Enable translucent background
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)  # Keep window on top
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)  # Keep window on top
 
         # Set initial window position from app_config.json
         main_pos = self.app_config.get("main_window_position")
         if main_pos:
             self.move(main_pos.get("x", 100), main_pos.get("y", 100))
         else:
-            print("Warning: 'main_window_position' not found in app_config.json. Using default position.")
+            _debug_print("Warning: 'main_window_position' not found in app_config.json. Using default positioning.")
             log_error("'main_window_position' app_config.json'da bulunamadı.")
 
         # Connect buttons to their respective methods using object names from .ui file
-        self.findChild(QPushButton, "quit").clicked.connect(self.close)
-        self.findChild(QPushButton, "pen").clicked.connect(self.start_full_screen_paint)
-        self.findChild(QPushButton, "ss").clicked.connect(self.open_region_selector)
-        self.findChild(QPushButton, "eraser").clicked.connect(self.close)
+        quit_btn = self.findChild(QPushButton, "quit")
+        if quit_btn:
+            quit_btn.clicked.connect(self.close)
+        else:
+            _debug_print("Warning: 'quit' button not found in undockapp.ui.")
+            log_error("UI'da 'quit' butonu bulunamadı.")
+
+        pen_btn = self.findChild(QPushButton, "pen")
+        if pen_btn:
+            pen_btn.clicked.connect(self.start_full_screen_paint)
+        else:
+            _debug_print("Warning: 'pen' button not found in undockapp.ui.")
+            log_error("UI'da 'pen' butonu bulunamadı.")
+
+        ss_btn = self.findChild(QPushButton, "ss")
+        if ss_btn:
+            ss_btn.clicked.connect(self.open_region_selector)
+        else:
+            _debug_print("Warning: 'ss' button not found in undockapp.ui.")
+            log_error("UI'da 'ss' butonu bulunamadı.")
+
+        # Connect the new "settings" button
+        self.settings_btn = self.findChild(QPushButton, "settings_btn")  # Assuming objectName is 'settings_btn'
+        if self.settings_btn:
+            self.settings_btn.clicked.connect(self.open_settings_window)
+        else:
+            _debug_print("Warning: 'settings_btn' button not found in undockapp.ui.")
+            log_error("UI'da 'settings_btn' butonu bulunamadı.")
 
         # --- KALEM RENKLERİNİ app_config.json'dan DİNAMİK YÜKLEME ---
         self.load_pen_colors_from_config()
@@ -224,21 +329,15 @@ class Ui(QMainWindow):
 
     def load_pen_colors_from_config(self):
         """
-        Loads pen colors from app_config.json and connects them to buttons.
+        Loads pen colors from app_config.json and connects them to buttons in the main UI.
+        This method is designed to work with fixed-named buttons in undockapp.ui if they exist.
         """
         if self.app_config and "pen_colors" in self.app_config:
             colors = self.app_config["pen_colors"]
-            # Clear existing color buttons if any (though for .ui, they are usually fixed)
-            # Find the layout containing your color buttons
-            # Assuming your color buttons are directly under Ui or a specific layout
-            # For this example, we'll iterate through predefined names like "color_red", "color_blue" etc.
-            # If you want truly dynamic buttons, you'd need a QGridLayout and add buttons programmatically.
-
-            # Iterate through the first few color buttons defined in your .ui file
-            # and assign them colors from the config.
-            # This is a fixed mapping. For more dynamic, you'd generate buttons.
+            # These are the object names of your QPushButton widgets in undockapp.ui (if any)
+            # This list should match the names in your undockapp.ui
             color_button_names = ["color_red", "color_blue", "color_black", "color_green",
-                                  "color_custom1", "color_custom2"]  # Add more as needed based on your .ui
+                                  "color_custom1", "color_custom2"]  # Example names in main UI
 
             for i, color_str in enumerate(colors):
                 if i < len(color_button_names):
@@ -249,45 +348,95 @@ class Ui(QMainWindow):
                             if q_color.isValid():
                                 btn.setStyleSheet(
                                     f"background-color: {color_str}; border-radius: 5px; border: 1px solid gray;")
-                                btn.clicked.disconnect()  # Disconnect previous connection if any
+                                try:
+                                    btn.clicked.disconnect()
+                                except TypeError:  # Disconnects if already connected
+                                    pass
                                 btn.clicked.connect(lambda checked, c=q_color: self.set_color(c))
                                 btn.show()  # Make sure the button is visible
                             else:
-                                print(f"Uyarı: Geçersiz renk değeri '{color_str}' app_config.json'da bulundu.")
-                                log_error(f"Geçersiz renk değeri app_config.json'da: {color_str}")
+                                _debug_print(
+                                    f"Uyarı (Main UI): Geçersiz renk değeri '{color_str}' app_config.json'da bulundu.")
+                                log_error(f"Main UI: Geçersiz renk değeri app_config.json'da: {color_str}")
                                 if btn: btn.hide()  # Hide button if color is invalid
                         except Exception as e:
-                            print(f"Renk butonu ayarlanırken hata oluştu: {color_str} - {e}")
-                            log_error(f"Renk butonu ayarlanırken hata: {color_str} - {e}", sys.exc_info())
+                            _debug_print(f"Main UI renk butonu ayarlanırken hata oluştu: {color_str} - {e}")
+                            log_error(f"Main UI renk butonu ayarlanırken hata: {color_str} - {e}", sys.exc_info())
                             if btn: btn.hide()  # Hide button on error
                     else:
-                        print(f"Uyarı: {color_button_names[i]} isimli buton UI dosyasında bulunamadı.")
+                        _debug_print(
+                            f"Uyarı (Main UI): {color_button_names[i]} isimli buton undockapp.ui dosyasında bulunamadı.")
                 else:
-                    print(f"Bilgi: app_config.json'da tanımlanan tüm renkler için yeterli buton mevcut değil.")
+                    _debug_print(
+                        f"Bilgi (Main UI): app_config.json'da tanımlanan tüm renkler için yeterli buton mevcut değil.")
         else:
-            print("Uyarı: 'pen_colors' anahtarı app_config.json'da bulunamadı. Varsayılan renkler kullanılacak.")
-            log_error("app_config.json'da 'pen_colors' anahtarı bulunamadı.")
+            _debug_print(
+                "Uyarı (Main UI): 'pen_colors' anahtarı app_config.json'da bulunamadı. Varsayılan renkler kullanılacak.")
+            log_error("Main UI: app_config.json'da 'pen_colors' anahtarı bulunamadı.")
 
     def load_app_config(self, config_path):
         """
         Loads application configuration from the specified JSON file.
+        Sets the global _DEBUG_MODE_ENABLED flag based on 'debug_mode' in config.
+        Ensures 'pen_colors' has at least 6 default entries if missing or too short.
         """
+        global _DEBUG_MODE_ENABLED  # Declare global to modify it
         try:
             with open(config_path, 'r', encoding='utf-8') as f:
                 config_data = json.load(f)
+                # Set the global debug flag
+                _DEBUG_MODE_ENABLED = config_data.get("debug_mode", False)
+                _debug_print(f"Debug Mode Enabled: {_DEBUG_MODE_ENABLED}")
+
+                # Ensure 'pen_colors' exists and has at least 6 entries
+                if "pen_colors" not in config_data or not isinstance(config_data["pen_colors"], list):
+                    config_data["pen_colors"] = []
+
+                default_colors = ["#FF0000", "#0000FF", "#000000", "#008000", "#800080", "#FFA500"]
+                while len(config_data["pen_colors"]) < len(default_colors):
+                    config_data["pen_colors"].append(default_colors[len(config_data["pen_colors"])])
+
+                # Trim if there are too many colors (optional, but good for fixed UI)
+                config_data["pen_colors"] = config_data["pen_colors"][:len(default_colors)]
+
                 return config_data
         except FileNotFoundError:
             error_msg = f"Hata: Uygulama yapılandırma dosyası bulunamadı: {config_path}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
-            return None
+            # Create a default config if not found
+            default_config = {
+                "debug_mode": False,
+                "main_window_position": {"x": 100, "y": 100},
+                "app_icon_path": "icons/app_icon.ico",
+                "main_ui_file": "undockapp.ui",
+                "tool_ui_file": "pen_tool.ui",
+                "tool_window_position": {"x_offset_from_paint_window": -20, "y_offset_from_paint_window": 20},
+                "pen_colors": ["#FF0000", "#0000FF", "#000000", "#008000", "#800080", "#FFA500"]
+            }
+            try:
+                os.makedirs(os.path.dirname(config_path), exist_ok=True)
+                with open(config_path, 'w', encoding='utf-8') as f:
+                    json.dump(default_config, f, indent=4, ensure_ascii=False)
+                _debug_print(f"Varsayılan app_config.json oluşturuldu: {config_path}")
+                _DEBUG_MODE_ENABLED = default_config.get("debug_mode", False)
+                return default_config
+            except Exception as write_e:
+                error_msg_write = f"Hata: Varsayılan yapılandırma dosyası yazılamadı: {write_e}"
+                print(error_msg_write)
+                log_error(error_msg_write, sys.exc_info())
+                return None
+
         except json.JSONDecodeError:
             error_msg = f"Hata: Uygulama yapılandırma dosyası geçersiz JSON formatında: {config_path}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
             return None
         except Exception as e:
             error_msg = f"Uygulama yapılandırması yüklenirken bir hata oluştu: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
             return None
@@ -302,15 +451,17 @@ class Ui(QMainWindow):
                 full_icon_path = os.path.join(base_dir, icon_path_relative)
                 if os.path.exists(full_icon_path):
                     self.setWindowIcon(QIcon(full_icon_path))
-                    print(f"Uygulama simgesi yüklendi: {full_icon_path}")
+                    _debug_print(f"Uygulama simgesi yüklendi: {full_icon_path}")
                 else:
                     error_msg = f"Uyarı: Uygulama simgesi bulunamadı: {full_icon_path}"
+                    # Always print warnings
                     print(error_msg)
                     log_error(error_msg)
             else:
-                print("Uyarı: 'app_icon_path' yapılandırma dosyasında bulunamadı.")
+                _debug_print("Uyarı: 'app_icon_path' yapılandırma dosyasında bulunamadı.")
         except Exception as e:
             error_msg = f"Uygulama simgesi ayarlanırken hata oluştu: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
 
@@ -322,6 +473,19 @@ class Ui(QMainWindow):
             self.selector.showFullScreen()
         except Exception as e:
             error_msg = f"Bölge seçici açılırken hata oluştu: {e}"
+            # Always print errors
+            print(error_msg)
+            log_error(error_msg, sys.exc_info())
+            self.show()  # Hata olursa ana pencereyi tekrar göster
+
+    def open_settings_window(self):
+        """Hides the main window and opens the settings window."""
+        try:
+            self.hide()  # Main window'u gizle
+            self.settings_window = SettingsWindow(self)  # SettingsWindow'ı oluştur ve main window referansını ilet
+            self.settings_window.show()  # SettingsWindow'ı göster
+        except Exception as e:
+            error_msg = f"Ayarlar penceresi açılırken hata oluştu: {e}"
             print(error_msg)
             log_error(error_msg, sys.exc_info())
             self.show()  # Hata olursa ana pencereyi tekrar göster
@@ -353,6 +517,7 @@ class Ui(QMainWindow):
             )
         except Exception as e:
             error_msg = f"Şeffaflık ayarlanamadı: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
 
@@ -364,6 +529,7 @@ class Ui(QMainWindow):
                 self.color_indicator.setStyleSheet(f"background-color: {color.name()}; border-radius: 5px;")
         except Exception as e:
             error_msg = f"Renk ayarlama hatası: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
 
@@ -375,10 +541,12 @@ class Ui(QMainWindow):
                 self.active_size = sizes[index]
             else:
                 error_msg = f"Geçersiz fırça boyutu indeksi: {index}"
+                # Always print errors
                 print(error_msg)
                 log_error(error_msg)
         except Exception as e:
             error_msg = f"Fırça boyutu ayarlama hatası: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
 
@@ -398,6 +566,7 @@ class Ui(QMainWindow):
                     self.paint_window.showFullScreen()
                 except Exception as e:
                     error_msg = f"Tam ekran çizim penceresi oluşturulurken hata oluştu: {e}"
+                    # Always print errors
                     print(error_msg)
                     log_error(error_msg, sys.exc_info())
                     self.show()  # Show main window if paint window fails
@@ -405,6 +574,7 @@ class Ui(QMainWindow):
                 self.show()  # Show main window if screenshot fails
         except Exception as e:
             error_msg = f"Tam ekran boyama başlatılırken genel hata: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
             self.show()
@@ -432,6 +602,7 @@ class Ui(QMainWindow):
             return pixmap
         except Exception as e:
             error_msg = f"Ekran görüntüsü alınamadı: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
             QMessageBox.critical(self, "Ekran Görüntüsü Hatası", "Ekran görüntüsü alınamadı.")
@@ -509,7 +680,7 @@ class RegionSelector(QWidget):
         """Draws the transparent gray overlay and the red selection rectangle."""
         try:
             painter = QPainter(self)
-            painter.setPen(QPen(Qt.red, 2, Qt.DashLine))
+            painter.setPen(QPen(QColor(255, 0, 0, 255), 2, Qt.DashLine)) # red frame added Qt.red > is old
             painter.drawRect(QRect(self.begin, self.end))
         except Exception as e:
             log_error(f"RegionSelector paintEvent hatası: {e}", sys.exc_info())
@@ -528,6 +699,7 @@ class RegionSelector(QWidget):
             paint_window.show()
         except Exception as e:
             error_msg = f"Bölge yakalama veya çizim penceresi açılamadı: {e}"
+            # Always print errors
             print(error_msg)
             log_error(error_msg, sys.exc_info())
             QMessageBox.critical(self, "Hata", "Bölge yakalama veya çizim penceresi açılamadı.")
@@ -567,13 +739,26 @@ class PaintCanvasWindow(QMainWindow):
         )
 
         # Create an empty overlay image to draw on. Its size matches the window size.
+        # Her zaman boş bir tuvalle başla
         self.overlay_image = QImage(self.size(), QImage.Format_ARGB32)
-        self.overlay_image.fill(Qt.transparent)  # Fill with transparent color initially
+        self.overlay_image.fill(Qt.transparent)
+
+        # --- Undo/Redo için eklenenler ---
+        self.undo_stack = []
+        self.undo_index = -1
+
+        # Başlangıçtaki boş tuval durumunu kaydet (sadece bir kez, pencere ilk açıldığında)
+        # Bu, undo yığınının ilk boş haliyle başlamasını sağlar
+        self.save_drawing_state()
+        _debug_print("PaintCanvasWindow başlatıldı, boş tuvalle başlandı.")
+
+        # --- Undo/Redo için eklenenler SONU ---
 
         # Drawing properties
         self.brush_color = initial_brush_color
         self.brush_size = initial_brush_size
         self.active_tool = "pen"  # Default tool
+        self.eraser_size = 20  # Silgi için başlangıç boyutu, kalemden ayrı tutulacak
 
         self.drawing = False  # Flag to indicate if drawing is active
         self.moving_image = False  # Flag to indicate if image is being moved
@@ -591,6 +776,8 @@ class PaintCanvasWindow(QMainWindow):
         self.temp_end_point = QPoint()  # End point for shape tools
 
         self.drag_offset = QPoint()  # Offset for dragging the image
+
+        self.painter = None  # Initialize painter for continuous drawing
 
         # Create move image button
         self.move_image_btn = QPushButton("Görseli Taşı", self)
@@ -627,7 +814,7 @@ class PaintCanvasWindow(QMainWindow):
             image_y = self.image_pos.y()
 
             button_x = image_x + (image_width - button_width) // 2
-            button_y = image_y - self.move_image_btn.height() - 10  # 10px above the top edge
+            button_y = image_y - self.move_image_btn.height() - 10  # 10px above the top top edge
 
             self.move_image_btn.move(button_x, button_y)
 
@@ -648,7 +835,7 @@ class PaintCanvasWindow(QMainWindow):
                 self.y() + y_offset
             )
         else:
-            print("Warning: 'tool_window_position' not found in app_config.json. Using default positioning.")
+            _debug_print("Warning: 'tool_window_position' not found in app_config.json. Using default positioning.")
             log_error("'tool_window_position' app_config.json'da bulunamadı.")
             # Fallback to default positioning if config is missing
             self.tool_window.move(self.x() + self.width() - self.tool_window.width() - 20, self.y() + 20)
@@ -694,19 +881,125 @@ class PaintCanvasWindow(QMainWindow):
             log_error(f"Fırça rengi ayarlanırken hata: {e}", sys.exc_info())
 
     def set_brush_size(self, size):
-        """Sets the current brush size."""
+        """Sets the current brush size (for pen and shapes)."""
         try:
             self.brush_size = size
         except Exception as e:
             log_error(f"Fırça boyutu ayarlanırken hata: {e}", sys.exc_info())
 
-    def clear_all_drawings(self):
-        """Clears all drawings on the overlay image."""
+    def set_eraser_size(self, size):
+        """Sets the current eraser size."""
         try:
-            self.overlay_image.fill(Qt.transparent)  # Fill the overlay with transparent color
-            self.update()  # Request a repaint to show the cleared canvas
+            self.eraser_size = size
+        except Exception as e:
+            log_error(f"Silgi boyutu ayarlanırken hata: {e}", sys.exc_info())
+
+    def clear_all_drawings(self):
+        """Çizim katmanındaki tüm çizimleri temizler ve geri alma/yineleme yığınını sıfırlar."""
+        try:
+            self.overlay_image.fill(Qt.transparent)  # Çizim katmanını şeffaf renkle doldur
+            self.save_drawing_state()  # Yeni boş durumu kaydet (undo stack için)
+            self.update()  # Tuvalin temizlendiğini göstermek için yeniden boyama iste
+            self._save_current_drawing_auto()  # Otomatik kaydetme burada tetiklenir
         except Exception as e:
             log_error(f"Çizimleri temizlerken hata: {e}", sys.exc_info())
+
+    def save_drawing_state(self):
+        """Çizim katmanının mevcut durumunu geri alma yığınına kaydeder."""
+        try:
+            # Mevcut indeksin ötesindeki tüm durumları sil
+            while len(self.undo_stack) > self.undo_index + 1:
+                self.undo_stack.pop()
+
+            # overlay_image'ın derin kopyasını al
+            copied_image = QImage(self.overlay_image.size(), self.overlay_image.format())
+            painter = QPainter(copied_image)
+            painter.drawImage(0, 0, self.overlay_image)
+            painter.end()
+
+            self.undo_stack.append(copied_image)
+            self.undo_index = len(self.undo_stack) - 1
+            # _debug_print(f"Durum kaydedildi. Stack boyutu: {len(self.undo_stack)}, Index: {self.undo_index}")
+
+            # Otomatik kaydetme artık burada çağrılmıyor
+
+        except Exception as e:
+            log_error(f"Çizim durumu kaydedilirken hata: {e}", sys.exc_info())
+
+    def undo_drawing(self):
+        """Son çizim eylemini geri alır."""
+        try:
+            if self.undo_index > 0:
+                self.undo_index -= 1
+                self.overlay_image = self.undo_stack[self.undo_index]
+                self.update()
+                # Otomatik kaydetme artık burada çağrılmıyor
+            else:
+                _debug_print("Geri alınacak başka çizim yok.")
+        except Exception as e:
+            log_error(f"Geri alma işlemi sırasında hata: {e}", sys.exc_info())
+
+    def redo_drawing(self):
+        """Geri alınan son çizim eylemini tekrar yapar."""
+        try:
+            if self.undo_index < len(self.undo_stack) - 1:
+                self.undo_index += 1
+                self.overlay_image = self.undo_stack[self.undo_index]
+                self.update()
+                # Otomatik kaydetme artık burada çağrılmıyor
+            else:
+                _debug_print("İleri alınacak başka çizim yok.")
+        except Exception as e:
+            log_error(f"İleri alma işlemi sırasında hata: {e}", sys.exc_info())
+
+    def set_overlay_image(self, image: QImage):
+        """Harici olarak yüklenen bir QImage'ı çizim katmanı olarak ayarlar."""
+        try:
+            # Explicitly make a deep copy to ensure independent memory management
+            # and to prevent issues if the 'image' argument is temporary.
+            self.overlay_image = QImage(image)
+            # Yüklendikten sonra undo stack'i sıfırla ve yeni görüntüyü ilk durum olarak ekle
+            self.undo_stack = [QImage(self.overlay_image)]  # Use the newly copied overlay_image for the stack
+            self.undo_index = 0
+
+            self.update()  # Yeni görüntüyü ekranda göstermek için güncelleme iste
+            # Otomatik kaydetme artık burada çağrılmıyor
+        except Exception as e:
+            log_error(f"Çizim katmanı görüntüsü ayarlanırken hata: {e}", sys.exc_info())
+
+    def _save_current_drawing_auto(self):
+        """
+        Mevcut çizimi (overlay_image) Base64 kodlu PNG string olarak
+        önceden tanımlanmış otomatik kayıt dosyasına kaydeder.
+        """
+        try:
+            # Dosya dizininin var olduğundan emin olun
+            os.makedirs(os.path.dirname(_AUTO_SAVE_DRAWING_FILE), exist_ok=True)
+
+            # --- Hata Ayıklama İçin Geçici PNG Kaydı ---
+            temp_debug_file = os.path.join(os.path.dirname(__file__), 'debug_overlay_temp.png')
+            self.overlay_image.save(temp_debug_file, "PNG")
+            _debug_print(f"Hata ayıklama için geçici çizim kaydedildi: {temp_debug_file}")
+            # --- Hata Ayıklama İçin Geçici PNG Kaydı SONU ---
+
+            buffer = QBuffer()
+            buffer.open(QBuffer.WriteOnly)
+            self.overlay_image.save(buffer, "PNG")
+            png_data = buffer.data()
+            buffer.close()
+
+            base64_data = png_data.toBase64().data().decode('utf-8')
+
+            has_visible_content = _check_qimage_for_visible_content(self.overlay_image)
+
+            _debug_print(f"Saved overlay_image contains visible content: {has_visible_content}")
+            _debug_print(
+                f"Otomatik kaydedildi. Resim Boyutu: {self.overlay_image.size().width()}x{self.overlay_image.size().height()}, Base64 Uzunluğu: {len(base64_data)}")
+
+            with open(_AUTO_SAVE_DRAWING_FILE, 'w', encoding='utf-8') as f:
+                f.write(base64_data)
+        except Exception as e:
+            log_error(f"Otomatik çizim kaydedilirken hata: {e}", sys.exc_info())
 
     def mousePressEvent(self, event):
         """Handles mouse press events for drawing, moving, and resizing the image."""
@@ -744,10 +1037,31 @@ class PaintCanvasWindow(QMainWindow):
                         self.moving_image = True
                         self.drag_offset = event.pos() - self.image_pos
                         self.setCursor(CursorManager.get_cursor("move_active"))  # JSON'dan imleç çek
-                else:
+                else:  # Drawing initiated
                     self.drawing = True
                     self.last_point = event.pos()  # These are now always window-relative
                     self.temp_start_point = event.pos()  # These are now always window-relative
+
+                    # Add debug print for brush color alpha
+                    _debug_print(
+                        f"Drawing initiated. Active tool: {self.active_tool}, Brush color alpha: {self.brush_color.alpha()}")
+
+                    # Start QPainter for continuous drawing (pen, eraser, highlight)
+                    if self.active_tool in ["pen", "eraser", "highlight"]:
+                        self.painter = QPainter(self.overlay_image)
+                        self.painter.begin(self.overlay_image)  # Explicitly begin painting
+                        if self.active_tool == "eraser":
+                            self.painter.setCompositionMode(QPainter.CompositionMode_Clear)
+                            # Silgi kalınlığı için self.eraser_size kullan
+                            pen = QPen(Qt.transparent, self.eraser_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+                        elif self.active_tool == "highlight":
+                            self.painter.setCompositionMode(QPainter.CompositionMode_Screen)
+                            pen = QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+                        else:  # Pen
+                            self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+                            pen = QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+                        self.painter.setPen(pen)
+
         except Exception as e:
             log_error(f"PaintCanvasWindow mousePressEvent hatası: {e}", sys.exc_info())
 
@@ -789,24 +1103,10 @@ class PaintCanvasWindow(QMainWindow):
                 self.move_image_btn.move(button_x, button_y)
                 self.update()
             elif self.drawing and (event.buttons() & Qt.LeftButton):
-                painter = QPainter(self.overlay_image)  # Paint directly on overlay_image
-                if self.active_tool == "eraser":
-                    painter.setCompositionMode(QPainter.CompositionMode_Clear)  # Transparent for erasing
-                    pen = QPen(Qt.transparent, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
-                elif self.active_tool == "highlight":  # Highlighter modu için özel harmanlama modu
-                    painter.setCompositionMode(QPainter.CompositionMode_Screen)  # Renkleri koyulaştırmadan harmanla
-                    pen = QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
-                else:  # Diğer tüm araçlar (kalem, şekiller vb.) için normal harmanlama
-                    painter.setCompositionMode(QPainter.CompositionMode_SourceOver)  # Normal blending
-                    pen = QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
-                painter.setPen(pen)
-
-                if self.active_tool in ["pen", "eraser", "highlight"]:  # "highlight" da sürekli çizim yapar
-                    painter.drawLine(self.last_point, event.pos())  # Drawing with window-relative coords
+                if self.active_tool in ["pen", "eraser", "highlight"] and self.painter:
+                    self.painter.drawLine(self.last_point, event.pos())  # Drawing with window-relative coords
                     self.last_point = event.pos()
                 self.temp_end_point = event.pos()  # Always window-relative
-                painter.end()  # End painter for overlay_image to apply changes
-
                 self.update()  # Request repaint for the whole window
         except Exception as e:
             log_error(f"PaintCanvasWindow mouseMoveEvent hatası: {e}", sys.exc_info())
@@ -840,29 +1140,36 @@ class PaintCanvasWindow(QMainWindow):
                         CursorManager.get_cursor("move_inactive") if self.space_pressed else CursorManager.get_cursor(
                             "default"))  # JSON'dan imleç çek
                 elif self.drawing:
-                    self.drawing = False
-                    painter = QPainter(self.overlay_image)  # Paint directly on overlay_image
+                    # End continuous drawing painter if active
+                    if self.painter and self.painter.isActive():
+                        self.painter.end()
+                        self.painter = None
 
-                    # Mouse release for shapes also uses current tool's composition mode
-                    if self.active_tool == "highlight":
-                        painter.setCompositionMode(QPainter.CompositionMode_Screen)
-                    else:
-                        painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+                    # For shapes (line, rect, ellipse), draw them once on release
+                    if self.active_tool in ["line", "rect", "ellipse"]:
+                        painter = QPainter(self.overlay_image)
+                        if self.active_tool == "highlight":  # Highlighter modu için özel harmanlama modu
+                            painter.setCompositionMode(QPainter.CompositionMode_Screen)
+                        else:  # Diğer tüm araçlar (kalem, şekiller vb.) için normal harmanlama
+                            painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
 
-                    painter.setPen(QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                        painter.setPen(QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
 
-                    if self.active_tool == "line":
-                        painter.drawLine(self.temp_start_point, event.pos())  # Drawing with window-relative coords
-                    elif self.active_tool == "rect":
-                        painter.drawRect(
-                            QRect(self.temp_start_point,
-                                  event.pos()).normalized())  # Drawing with window-relative coords
-                    elif self.active_tool == "ellipse":
-                        painter.drawEllipse(
-                            QRect(self.temp_start_point,
-                                  event.pos()).normalized())  # Drawing with window-relative coords
-                    painter.end()  # End painter for overlay_image to apply changes
+                        if self.active_tool == "line":
+                            painter.drawLine(self.temp_start_point, event.pos())  # Drawing with window-relative coords
+                        elif self.active_tool == "rect":
+                            painter.drawRect(
+                                QRect(self.temp_start_point,
+                                      event.pos()).normalized())  # Drawing with window-relative coords
+                        elif self.active_tool == "ellipse":
+                            painter.drawEllipse(
+                                QRect(self.temp_start_point,
+                                      event.pos()).normalized())  # Drawing with window-relative coords
+                        painter.end()  # End painter for overlay_image to apply changes
+
+                    self.drawing = False  # Reset drawing flag after all operations
                     self.update()  # Request repaint for the whole window
+                    self.save_drawing_state()  # Çizim bittikten sonra durumu kaydet (undo stack için)
         except Exception as e:
             log_error(f"PaintCanvasWindow mouseReleaseEvent hatası: {e}", sys.exc_info())
 
@@ -880,6 +1187,10 @@ class PaintCanvasWindow(QMainWindow):
                 # Reopen the main UI window if it was passed as a reference
                 if self.main_window_ref:
                     self.main_window_ref.show()
+            elif event.key() == Qt.Key_Z and event.modifiers() == Qt.ControlModifier:  # Ctrl+Z için undo
+                self.undo_drawing()
+            elif event.key() == Qt.Key_Y and event.modifiers() == Qt.ControlModifier:  # Ctrl+Y için redo
+                self.redo_drawing()
             else:
                 super().keyPressEvent(event)
         except Exception as e:
@@ -910,7 +1221,7 @@ class PaintCanvasWindow(QMainWindow):
             # 1) Fill the entire canvas background with light gray
             painter.fillRect(self.rect(), QColor(245, 245, 245))
 
-            # 2) Draw the background screenshot (if any) at its current position
+            # 2) Draw the background pixmap (if any) at its current position
             if not self.background_pixmap.isNull():
                 painter.drawPixmap(self.image_pos, self.background_pixmap)
 
@@ -924,8 +1235,11 @@ class PaintCanvasWindow(QMainWindow):
             # 3) Draw the overlay image (where persistent drawings are stored) at (0,0)
             # This covers the entire window and allows drawing anywhere, even outside the initial screenshot area
             painter.drawImage(0, 0, self.overlay_image)
+            _debug_print(
+                f"paintEvent: overlay_image isNull: {self.overlay_image.isNull()}, Size: {self.overlay_image.size().width()}x{self.overlay_image.size().height()}, Format: {self.overlay_image.format()}")
 
             # 4) Draw preview for shape tools (line, rect, ellipse) using window-relative coordinates
+            # This preview must be drawn on the window's painter, not the overlay_image's painter
             if self.drawing and self.active_tool in ["line", "rect", "ellipse"]:
                 pen = QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
                 pen.setStyle(Qt.DashLine)  # Use dashed line for preview
@@ -945,7 +1259,7 @@ class PaintCanvasWindow(QMainWindow):
                     image_rect.bottomRight() - QPoint(self.resize_handle_size, self.resize_handle_size),
                     QSize(self.resize_handle_size, self.resize_handle_size)
                 )
-                painter.fillRect(handle_rect, QColor(0, 0, 255, 160))  # Blue semi-transparent box for handle
+                painter.fillRect(handle_rect, QColor(255, 0, 0, 255))  # red non-transparent box for handle
 
                 # Draw the preview rectangle during resizing
                 if self.resizing and not self.current_preview_rect.isNull():
@@ -975,6 +1289,8 @@ class PaintCanvasWindow(QMainWindow):
                 painter.drawImage(0, 0, self.overlay_image)
                 painter.end()
                 self.overlay_image = new_overlay_image
+                # Resize olayında undo stack'i güncelleme (genellikle gerekmez, çünkü çizimler aynı kalır)
+                # Ancak uygulamanızda yeniden boyutlandırma çizimi etkiliyorsa burada kaydetme yapılabilir.
             super().resizeEvent(event)
         except Exception as e:
             log_error(f"PaintCanvasWindow resizeEvent hatası: {e}", sys.exc_info())
@@ -990,10 +1306,14 @@ class PaintCanvasWindow(QMainWindow):
 
     def closeEvent(self, event):
         """
-        Handles the window close event. Ensures tool window is closed
-        and reopens the main UI window.
+        Handles the window close event. Ensures tool window is closed,
+        saves the current drawing state, and reopens the main UI window.
         """
         try:
+            # Mevcut çizim durumunu kaydet
+            self._save_current_drawing_auto()  # Otomatik kaydetme burada tetiklenir
+            _debug_print("Çizim penceresi kapatılırken otomatik kaydetme tetiklendi.")
+
             self.close_tool_window()
             # Ensure the main window is reopened after this window closes
             if self.main_window_ref:
@@ -1040,38 +1360,99 @@ class ToolWindow(QWidget):
         # Get reference to the new color indicator QLabel
         self.selected_color_indicator = self.findChild(QLabel, "selected_color_indicator")
         if not self.selected_color_indicator:
-            print("Warning: 'selected_color_indicator' QLabel not found in pen_tool.ui.")
+            _debug_print("Warning: 'selected_color_indicator' QLabel not found in pen_tool.ui.")
             log_error("UI'da 'selected_color_indicator' QLabel bulunamadı.")
 
         # Connect tool buttons using their object names from .ui
-        self.findChild(QPushButton, "pen_btn").clicked.connect(lambda: self.set_tool("pen"))
-        self.findChild(QPushButton, "eraser_btn").clicked.connect(lambda: self.set_tool("eraser"))
-        self.findChild(QPushButton, "line_btn").clicked.connect(lambda: self.set_tool("line"))
-        self.findChild(QPushButton, "rect_btn").clicked.connect(lambda: self.set_tool("rect"))
-        self.findChild(QPushButton, "ellipse_btn").clicked.connect(lambda: self.set_tool("ellipse"))
+        pen_btn = self.findChild(QPushButton, "pen_btn")
+        if pen_btn:
+            pen_btn.clicked.connect(lambda: self.set_tool("pen"))
+        else:
+            _debug_print("Warning: 'pen_btn' button not found in pen_tool.ui.")
+            log_error("UI'da 'pen_btn' butonu bulunamadı.")
 
-        # highlight_btn bağlantısı ve aracı "highlight" olarak ayarlama
-        self.findChild(QPushButton, "highlight_btn").clicked.connect(self.select_highlighter)
+        eraser_btn = self.findChild(QPushButton, "eraser_btn")
+        if eraser_btn:
+            eraser_btn.clicked.connect(lambda: self.set_tool("eraser"))
+        else:
+            _debug_print("Warning: 'eraser_btn' button not found in pen_tool.ui.")
+            log_error("UI'da 'eraser_btn' butonu bulunamadı.")
+
+        line_btn = self.findChild(QPushButton, "line_btn")
+        if line_btn:
+            line_btn.clicked.connect(lambda: self.set_tool("line"))
+        else:
+            _debug_print("Warning: 'line_btn' button not found in pen_tool.ui.")
+            log_error("UI'da 'line_btn' butonu bulunamadı.")
+
+        rect_btn = self.findChild(QPushButton, "rect_btn")
+        if rect_btn:
+            rect_btn.clicked.connect(lambda: self.set_tool("rect"))
+        else:
+            _debug_print("Warning: 'rect_btn' button not found in pen_tool.ui.")
+            log_error("UI'da 'rect_btn' butonu bulunamadı.")
+
+        ellipse_btn = self.findChild(QPushButton, "ellipse_btn")
+        if ellipse_btn:
+            ellipse_btn.clicked.connect(lambda: self.set_tool("ellipse"))
+        else:
+            _debug_print("Warning: 'ellipse_btn' button not found in pen_tool.ui.")
+            log_error("UI'da 'ellipse_btn' butonu bulunamadı.")
+
+        highlight_btn = self.findChild(QPushButton, "highlight_btn")
+        if highlight_btn:
+            highlight_btn.clicked.connect(self.select_highlighter)
+        else:
+            _debug_print("Warning: 'highlight_btn' button not found in pen_tool.ui.")
+            log_error("UI'da 'highlight_btn' butonu bulunamadı.")
 
         self.move_btn = self.findChild(QPushButton, "move_btn")
         if self.move_btn:
             self.move_btn.clicked.connect(lambda: self.paint_window._toggle_move_tool())
         else:
-            print("Warning: 'move_btn' not found in pen_tool.ui. Move tool functionality will be unavailable.")
+            _debug_print("Warning: 'move_btn' not found in pen_tool.ui. Move tool functionality will be unavailable.")
             log_error("UI'da 'move_btn' bulunamadı.")
 
         self.clear_all_btn = self.findChild(QPushButton, "clear_all_btn")
         if self.clear_all_btn:
             self.clear_all_btn.clicked.connect(self.clear_all_drawings_in_paint_window)
         else:
-            print("Warning: 'clear_all_btn' not found in pen_tool.ui. Clear all functionality will be unavailable.")
+            _debug_print(
+                "Warning: 'clear_all_btn' not found in pen_tool.ui. Clear all functionality will be unavailable.")
             log_error("UI'da 'clear_all_btn' bulunamadı.")
+
+        # --- Undo/Redo butonları bağlantısı ---
+        self.undo_btn = self.findChild(QPushButton, "undo")
+        if self.undo_btn:
+            self.undo_btn.clicked.connect(self.paint_window.undo_drawing)
+        else:
+            _debug_print("Warning: 'undo' button not found in pen_tool.ui.")
+            log_error("UI'da 'undo' butonu bulunamadı.")
+
+        self.redo_btn = self.findChild(QPushButton, "redo")
+        if self.redo_btn:
+            self.redo_btn.clicked.connect(self.paint_window.redo_drawing)
+        else:
+            _debug_print("Warning: 'redo' button not found in pen_tool.ui.")
+            log_error("UI'da 'redo' butonu bulunamadı.")
+        # --- Undo/Redo butonları bağlantısı SONU ---
+
+        # --- Otomatik Kayıt Yükle Butonu ---
+        self.load_commands_btn = self.findChild(QPushButton, "load_commands_btn")
+        if self.load_commands_btn:
+            self.load_commands_btn.clicked.connect(
+                self._load_auto_saved_drawing)  # Otomatik kaydı yükleyen metot bağlandı
+        else:
+            _debug_print(
+                "Warning: 'load_commands_btn' button not found in pen_tool.ui. Load auto-saved drawing functionality will be unavailable.")
+            log_error("UI'da 'load_commands_btn' butonu bulunamadı.")
+        # --- Otomatik Kayıt Yükle Butonu SONU ---
 
         # --- KALEM RENKLERİNİ app_config.json'dan DİNAMİK YÜKLEME ---
         self.load_tool_window_colors_from_config()
         # --- KALEM RENKLERİNİ DİNAMİK YÜKLEME SONU ---
 
-        # Connect brush size slider
+        # Connect brush size slider (for pen and shapes)
         self.brushSizeSlider = self.findChild(QSlider, "horizontalSlider")
         if self.brushSizeSlider:
             self.brushSizeSlider.setMinimum(1)
@@ -1079,13 +1460,33 @@ class ToolWindow(QWidget):
             self.brushSizeSlider.setValue(self.paint_window.brush_size)  # Set initial value
             self.brushSizeSlider.setOrientation(Qt.Horizontal)
             self.brushSizeSlider.setTickPosition(QSlider.TicksBelow)
-            self.brushSizeSlider.setTickInterval(5)
+            self.brushSizeSlider.setTickInterval(2)
             self.brushSizeSlider.valueChanged.connect(self.change_brush_size)
         else:
-            print("Warning: 'horizontalSlider' not found in pen_tool.ui. Brush size control will be unavailable.")
+            _debug_print(
+                "Warning: 'horizontalSlider' not found in pen_tool.ui. Brush size control will be unavailable.")
             log_error("UI'da 'horizontalSlider' bulunamadı.")
 
-        self.findChild(QPushButton, "exit_btn").clicked.connect(self.close)
+        # Connect eraser size slider (new)
+        self.eraserSizeSlider = self.findChild(QSlider, "eraser_slider")  # Assume 'eraser_slider' exists in UI
+        if self.eraserSizeSlider:
+            self.eraserSizeSlider.setMinimum(1)
+            self.eraserSizeSlider.setMaximum(50)  # Same range as brush
+            self.eraserSizeSlider.setValue(self.paint_window.eraser_size)  # Set initial value for eraser
+            self.eraserSizeSlider.setOrientation(Qt.Horizontal)
+            self.eraserSizeSlider.setTickPosition(QSlider.TicksBelow)
+            self.eraserSizeSlider.setTickInterval(5)
+            self.eraserSizeSlider.valueChanged.connect(self.change_eraser_size)  # New connection
+        else:
+            _debug_print("Warning: 'eraser_slider' not found in pen_tool.ui. Eraser size control will be unavailable.")
+            log_error("UI'da 'eraser_slider' bulunamadı.")
+
+        exit_btn = self.findChild(QPushButton, "exit_btn")
+        if exit_btn:
+            exit_btn.clicked.connect(self.close)
+        else:
+            _debug_print("Warning: 'exit_btn' button not found in pen_tool.ui.")
+            log_error("UI'da 'exit_btn' butonu bulunamadı.")
 
         # Set initial indicator color based on paint_window's current color
         self.set_selected_color_indicator(self.paint_window.brush_color)
@@ -1119,20 +1520,20 @@ class ToolWindow(QWidget):
                                 btn.clicked.connect(lambda checked, c=q_color: self.set_color_and_update_main(c))
                                 btn.show()  # Make sure the button is visible
                             else:
-                                print(
+                                _debug_print(
                                     f"Uyarı (ToolWindow): Geçersiz renk değeri '{color_str}' app_config.json'da bulundu.")
                                 log_error(f"ToolWindow: Geçersiz renk değeri app_config.json'da: {color_str}")
                                 btn.hide()  # Hide button if color is invalid
                         except Exception as e:
-                            print(f"ToolWindow renk butonu ayarlanırken hata oluştu: {color_str} - {e}")
+                            _debug_print(f"ToolWindow renk butonu ayarlanırken hata oluştu: {color_str} - {e}")
                             log_error(f"ToolWindow renk butonu ayarlanırken hata: {color_str} - {e}", sys.exc_info())
                             btn.hide()  # Hide button on error
                     else:
                         btn.hide()  # Hide buttons if there are no corresponding colors in config
                 else:
-                    print(f"Uyarı (ToolWindow): {color_button_names[i]} isimli buton UI dosyasında bulunamadı.")
+                    _debug_print(f"Uyarı (ToolWindow): {color_button_names[i]} isimli buton UI dosyasında bulunamadı.")
         else:
-            print(
+            _debug_print(
                 "Uyarı (ToolWindow): 'pen_colors' anahtarı app_config.json'da bulunamadı. Varsayılan renkler kullanılacak.")
             log_error("ToolWindow: app_config.json'da 'pen_colors' anahtarı bulunamadı.")
 
@@ -1160,22 +1561,38 @@ class ToolWindow(QWidget):
     def set_color_and_update_main(self, color):
         """
         Delegates color setting to the parent paint window and updates
-        this tool window's color indicator.
+        this tool window's color indicator. Ensures the brush color is
+        fully opaque unless the highlighter tool is active.
         """
         try:
+            q_color_obj = QColor(color)
+            if self.paint_window and self.paint_window.active_tool != "highlight":
+                # For non-highlighter tools, force the alpha to 255 (fully opaque)
+                q_color_obj.setAlpha(255)
+                # If it's highlight, it will already have its alpha set in select_highlighter,
+            # or it will maintain its alpha if set externally.
+
             if self.paint_window:
-                self.paint_window.set_brush_color(QColor(color))
-                self.set_selected_color_indicator(QColor(color))  # Update this window's indicator
+                self.paint_window.set_brush_color(q_color_obj)
+                self.set_selected_color_indicator(q_color_obj)  # Update this window's indicator
         except Exception as e:
             log_error(f"ToolWindow renk ayarlanırken hata: {e}", sys.exc_info())
 
     def change_brush_size(self, value):
-        """Delegates brush size change to the parent paint window."""
+        """Delegates brush size change to the parent paint window (for pen and shapes)."""
         try:
             if self.paint_window:
                 self.paint_window.set_brush_size(value)
         except Exception as e:
             log_error(f"ToolWindow fırça boyutu değiştirilirken hata: {e}", sys.exc_info())
+
+    def change_eraser_size(self, value):
+        """Delegates eraser size change to the parent paint window."""
+        try:
+            if self.paint_window:
+                self.paint_window.set_eraser_size(value)
+        except Exception as e:
+            log_error(f"ToolWindow silgi boyutu değiştirilirken hata: {e}", sys.exc_info())
 
     def select_highlighter(self):
         """
@@ -1201,6 +1618,74 @@ class ToolWindow(QWidget):
         except Exception as e:
             log_error(f"Tüm çizimler temizlenirken hata: {e}", sys.exc_info())
 
+    def _load_auto_saved_drawing(self):
+        """
+        Loads the drawing from the predefined auto-save file and applies it.
+        This method is called when the 'Yükle' button is clicked.
+        """
+        _debug_print("ToolWindow._load_auto_saved_drawing called (Yükle butonu).")
+        try:
+            # Check if the auto-save file exists and has content
+            if not os.path.exists(_AUTO_SAVE_DRAWING_FILE) or os.path.getsize(_AUTO_SAVE_DRAWING_FILE) == 0:
+                QMessageBox.information(self, "Bilgi",
+                                        "Otomatik kaydedilen çizim dosyası bulunamadı veya boş. Lütfen önce bir çizim yapın ve kaydedilmesini bekleyin.")
+                _debug_print(
+                    f"ToolWindow._load_auto_saved_drawing: Otomatik kayıt dosyası bulunamadı veya boş: {_AUTO_SAVE_DRAWING_FILE}")
+                return
+
+            with open(_AUTO_SAVE_DRAWING_FILE, 'r', encoding='utf-8') as f:
+                base64_data = f.read()
+            _debug_print(f"ToolWindow._load_auto_saved_drawing ile okunan Base64 veri uzunluğu: {len(base64_data)}")
+
+            if not base64_data.strip():
+                QMessageBox.information(self, "Bilgi", "Otomatik kaydedilen çizim dosyası boş.")
+                _debug_print("ToolWindow._load_auto_saved_drawing: Otomatik kaydedilen çizim dosyası boş.")
+                return
+
+            # Decode Base64 data to PNG byte array
+            png_data = QByteArray().fromBase64(base64_data.encode('utf-8'))
+
+            loaded_image = QImage()
+            # Attempt to load the QImage from the PNG byte array
+            load_success = loaded_image.loadFromData(png_data, "PNG")
+            _debug_print(
+                f"ToolWindow._load_auto_saved_drawing ile loaded_image.loadFromData başarı: {load_success}, isNull: {loaded_image.isNull()}")
+
+            if load_success and not loaded_image.isNull():
+                _debug_print(
+                    f"ToolWindow._load_auto_saved_drawing ile yüklenen orijinal resim boyutu: {loaded_image.size().width()}x{loaded_image.size().height()}")
+
+                # Check if the loaded image has visible content
+                if not _check_qimage_for_visible_content(loaded_image):
+                    QMessageBox.information(self, "Bilgi",
+                                            "Otomatik kaydedilen çizim başarıyla yüklendi, ancak içeriği boş veya tamamen şeffaf.")
+                    _debug_print("Yüklenen çizimin görünür içeriği yok (otomatik yükleme).")
+                else:
+                    QMessageBox.information(self, "Yükleme Tamamlandı", "Otomatik kaydedilen çizim başarıyla yüklendi.")
+
+                # Scale the loaded image to the current paint window size if dimensions differ
+                if loaded_image.size() != self.paint_window.size():
+                    scaled_image = loaded_image.scaled(self.paint_window.size(),
+                                                       Qt.IgnoreAspectRatio,  # En boy oranını korumadan doldur
+                                                       Qt.SmoothTransformation)  # Smooth scaling for better quality
+                    self.paint_window.set_overlay_image(scaled_image)
+                    _debug_print(
+                        f"ToolWindow._load_auto_saved_drawing ile yüklenen resim pencere boyutuna ölçeklendi: {scaled_image.size().width()}x{scaled_image.size().height()}")
+                else:
+                    # If sizes match, set the image directly
+                    self.paint_window.set_overlay_image(loaded_image)
+                    _debug_print(
+                        f"ToolWindow._load_auto_saved_drawing ile yüklenen resim doğrudan ayarlandı. Boyut: {loaded_image.size().width()}x{loaded_image.size().height()}")
+
+            else:
+                QMessageBox.critical(self, "Yükleme Hatası",
+                                     "Otomatik kaydedilen dosya geçerli bir çizim verisi içermiyor veya bozuk.")
+                log_error(
+                    f"Otomatik kaydedilen dosya geçerli bir çizim verisi içermiyor veya bozuk: {_AUTO_SAVE_DRAWING_FILE}")
+        except Exception as e:
+            QMessageBox.critical(self, "Hata", f"Otomatik çizim yüklenirken bir hata oluştu: {e}")
+            log_error(f"Otomatik çizim yüklenirken hata: {e}", sys.exc_info())
+
     def closeEvent(self, event):
         """
         Handles the tool window close event. Ensures the parent paint window
@@ -1217,6 +1702,279 @@ class ToolWindow(QWidget):
         event.accept()
 
 
+class SettingsWindow(QMainWindow):
+    """
+    A separate window for application settings, loaded from settings.ui.
+    """
+
+    def __init__(self, main_window_ref):
+        super().__init__()
+        self.main_window_ref = main_window_ref
+        self.app_config = main_window_ref.app_config  # Access the shared app_config dictionary
+
+        self.setWindowTitle("Ayarlar")
+        self.setFixedSize(700, 600)  # Increased size for more settings, as color management will take space
+
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
+
+        script_dir = os.path.dirname(__file__)
+        settings_ui_path = os.path.join(script_dir, 'data', 'settings.ui')
+
+        if not os.path.exists(settings_ui_path):
+            error_msg = f"Ayarlar UI dosyası bulunamadı: {settings_ui_path}"
+            QMessageBox.critical(self, "Hata", error_msg)
+            log_error(error_msg)
+            self.close()
+            return
+
+        try:
+            uic.loadUi(settings_ui_path, self)
+        except Exception as e:
+            error_msg = f"Ayarlar UI dosyası '{settings_ui_path}' yüklenirken hata oluştu: {e}"
+            QMessageBox.critical(self, "Ayarlar UI Yükleme Hatası", error_msg)
+            log_error(error_msg, sys.exc_info())
+            self.close()
+            return
+
+        # Connect UI elements
+        self.close_btn = self.findChild(QPushButton, "close_settings_btn")
+        if self.close_btn:
+            self.close_btn.clicked.connect(self.close_settings_window)
+        else:
+            _debug_print("Warning: 'close_settings_btn' not found in settings.ui.")
+            log_error("UI'da 'close_settings_btn' butonu bulunamadı.")
+
+        self.save_btn = self.findChild(QPushButton, "save_settings_btn")
+        if self.save_btn:
+            self.save_btn.clicked.connect(self.save_settings_from_ui)
+        else:
+            _debug_print("Warning: 'save_settings_btn' not found in settings.ui. Settings won't be savable.")
+            log_error("UI'da 'save_settings_btn' butonu bulunamadı.")
+
+        # New: References to the static color buttons
+        self.color_buttons = []
+        self.color_button_names = ["color_red", "color_blue", "color_black",
+                                   "color_green", "color_custom1", "color_custom2"]
+
+        for i, btn_name in enumerate(self.color_button_names):
+            btn = self.findChild(QPushButton, btn_name)
+            if btn:
+                self.color_buttons.append(btn)
+                # Connect the button's clicked signal to the handler method, passing its index
+                btn.clicked.connect(lambda checked, idx=i: self.edit_fixed_color_button(idx))
+            else:
+                _debug_print(f"Warning: Color button '{btn_name}' not found in settings.ui.")
+                log_error(f"UI'da '{btn_name}' butonu bulunamadı.")
+                # Append None or an empty button if not found to maintain index consistency if needed
+                self.color_buttons.append(None)
+
+                # Remove dynamic color management elements as per the new UI
+        # The new UI doesn't have these, so we ensure they are not referenced
+        self.add_color_btn = None
+        self.remove_color_btn = None
+        self.color_buttons_container = None  # This is no longer the dynamic container
+
+        # Load settings into UI fields
+        self.load_settings_to_ui()
+        # New: Load and display pen colors on these static buttons
+        self.load_pen_colors_to_settings_ui()
+
+    def load_settings_to_ui(self):
+        """Populates the UI elements with current settings from app_config."""
+        _debug_print("Loading general settings to UI...")
+        try:
+            # Debug Mode Checkbox
+            debug_checkbox = self.findChild(QtWidgets.QCheckBox, "debug_mode_checkbox")
+            if debug_checkbox:
+                debug_checkbox.setChecked(self.app_config.get("debug_mode", False))
+                _debug_print(f"Debug Mode Checkbox set to: {self.app_config.get('debug_mode', False)}")
+            else:
+                _debug_print("Warning: 'debug_mode_checkbox' not found in settings.ui.")
+
+            # Main Window Position (assuming QSpinBox for x and y)
+            main_pos = self.app_config.get("main_window_position", {"x": 100, "y": 100})
+            x_input = self.findChild(QtWidgets.QSpinBox, "main_window_x_input")
+            y_input = self.findChild(QtWidgets.QSpinBox, "main_window_y_input")
+            if x_input:
+                x_input.setValue(main_pos.get("x", 100))
+                _debug_print(f"Main window X set to: {main_pos.get('x', 100)}")
+            else:
+                _debug_print("Warning: 'main_window_x_input' not found.")
+            if y_input:
+                y_input.setValue(main_pos.get("y", 100))
+                _debug_print(f"Main window Y set to: {main_pos.get('y', 100)}")
+            else:
+                _debug_print("Warning: 'main_window_y_input' not found.")
+
+            # App Icon Path
+            app_icon_path_input = self.findChild(QtWidgets.QLineEdit, "app_icon_path_input")
+            if app_icon_path_input:
+                app_icon_path_input.setText(self.app_config.get("app_icon_path", ""))
+                _debug_print(f"App Icon Path set to: {self.app_config.get('app_icon_path', '')}")
+            else:
+                _debug_print("Warning: 'app_icon_path_input' not found.")
+
+            # UI File Paths
+            main_ui_file_input = self.findChild(QtWidgets.QLineEdit, "main_ui_file_input")
+            if main_ui_file_input:
+                main_ui_file_input.setText(self.app_config.get("main_ui_file", "undockapp.ui"))
+                _debug_print(f"Main UI File set to: {self.app_config.get('main_ui_file', 'undockapp.ui')}")
+            else:
+                _debug_print("Warning: 'main_ui_file_input' not found.")
+
+            tool_ui_file_input = self.findChild(QtWidgets.QLineEdit, "tool_ui_file_input")
+            if tool_ui_file_input:
+                tool_ui_file_input.setText(self.app_config.get("tool_ui_file", "pen_tool.ui"))
+                _debug_print(f"Tool UI File set to: {self.app_config.get('tool_ui_file', 'pen_tool.ui')}")
+            else:
+                _debug_print("Warning: 'tool_ui_file_input' not found.")
+
+            _debug_print("General settings loaded to UI successfully.")
+
+        except Exception as e:
+            log_error(f"Ayarlar UI'ye yüklenirken hata: {e}", sys.exc_info())
+
+    def load_pen_colors_to_settings_ui(self):
+        """Loads pen colors from app_config and displays them on the fixed color buttons."""
+        colors = self.app_config.get("pen_colors", [])
+        _debug_print(f"Loading {len(colors)} pen colors to settings UI (fixed buttons).")
+
+        for i, btn in enumerate(self.color_buttons):
+            if btn:  # Check if the button was successfully found in __init__
+                if i < len(colors):
+                    color_str = colors[i]
+                    try:
+                        q_color = QColor(color_str)
+                        if q_color.isValid():
+                            btn.setStyleSheet(
+                                f"background-color: {color_str}; border: 1px solid gray; border-radius: 5px;")
+                        else:
+                            _debug_print(
+                                f"Uyarı: Ayarlar UI: Geçersiz renk değeri '{color_str}' app_config.json'da bulundu. Varsayılan Gri kullanılacak.")
+                            log_error(f"Ayarlar UI: Geçersiz renk değeri app_config.json'da: {color_str}")
+                            btn.setStyleSheet(
+                                "background-color: lightgray; border: 1px solid gray; border-radius: 5px;")  # Default invalid to lightgray
+                    except Exception as e:
+                        log_error(f"Ayarlar UI: Renk butonu ayarlanırken hata: {color_str} - {e}", sys.exc_info())
+                        btn.setStyleSheet(
+                            "background-color: lightgray; border: 1px solid gray; border-radius: 5px;")  # Default on error
+                else:
+                    # If app_config has fewer colors than buttons, set remaining buttons to a default gray
+                    btn.setStyleSheet("background-color: lightgray; border: 1px solid gray; border-radius: 5px;")
+                    _debug_print(f"Bilgi: Renk {i} için app_config.json'da renk bulunamadı, varsayılan gri ayarlandı.")
+
+    def edit_fixed_color_button(self, index):
+        """
+        Opens a color dialog to edit a fixed color button's color.
+        Updates the app_config and refreshes the UI.
+        """
+        if index < 0 or index >= len(self.color_buttons) or not self.color_buttons[index]:
+            _debug_print(f"Error: Invalid index {index} for color button editing.")
+            return
+
+        current_color_str = self.app_config["pen_colors"][index]
+        initial_color = QColor(current_color_str)
+
+        color = QtWidgets.QColorDialog.getColor(initial_color, self)
+
+        if color.isValid():
+            new_color_name = color.name()  # Returns color in #RRGGBB format
+            _debug_print(f"Editing color at index {index} from {current_color_str} to {new_color_name}")
+            self.app_config["pen_colors"][index] = new_color_name
+            self.save_settings_from_ui()  # Save config and reload UI
+        else:
+            _debug_print("Color dialog cancelled or invalid color selected.")
+
+    # Removed add_new_color and remove_selected_color methods as per new UI
+
+    def save_settings_from_ui(self):
+        """Reads values from UI elements and saves them to app_config.json."""
+        _debug_print("Saving general settings from UI...")
+        try:
+            # Update debug mode
+            debug_checkbox = self.findChild(QtWidgets.QCheckBox, "debug_mode_checkbox")
+            if debug_checkbox:
+                self.app_config["debug_mode"] = debug_checkbox.isChecked()
+                # Update global debug flag immediately
+                global _DEBUG_MODE_ENABLED
+                _DEBUG_MODE_ENABLED = self.app_config["debug_mode"]
+                _debug_print(f"Updated Debug Mode: {_DEBUG_MODE_ENABLED}")
+            else:
+                _debug_print("Warning: 'debug_mode_checkbox' not found for saving.")
+
+            # Update Main Window Position
+            x_input = self.findChild(QtWidgets.QSpinBox, "main_window_x_input")
+            y_input = self.findChild(QtWidgets.QSpinBox, "main_window_y_input")
+            if x_input and y_input:
+                self.app_config["main_window_position"] = {
+                    "x": x_input.value(),
+                    "y": y_input.value()
+                }
+                _debug_print(f"Saved Main Window Position: {self.app_config['main_window_position']}")
+            else:
+                _debug_print("Warning: Main window position inputs not found for saving.")
+
+            # Update App Icon Path
+            app_icon_path_input = self.findChild(QtWidgets.QLineEdit, "app_icon_path_input")
+            if app_icon_path_input:
+                self.app_config["app_icon_path"] = app_icon_path_input.text()
+                _debug_print(f"Saved App Icon Path: {self.app_config['app_icon_path']}")
+            else:
+                _debug_print("Warning: 'app_icon_path_input' not found for saving.")
+
+            # Update UI File Paths
+            main_ui_file_input = self.findChild(QtWidgets.QLineEdit, "main_ui_file_input")
+            if main_ui_file_input:
+                self.app_config["main_ui_file"] = main_ui_file_input.text()
+                _debug_print(f"Saved Main UI File: {self.app_config['main_ui_file']}")
+            else:
+                _debug_print("Warning: 'main_ui_file_input' not found for saving.")
+
+            tool_ui_file_input = self.findChild(QtWidgets.QLineEdit, "tool_ui_file_input")
+            if tool_ui_file_input:
+                self.app_config["tool_ui_file"] = tool_ui_file_input.text()
+                _debug_print(f"Saved Tool UI File: {self.app_config['tool_ui_file']}")
+            else:
+                _debug_print("Warning: 'tool_ui_file_input' not found for saving.")
+
+            # Save the updated app_config dictionary back to the JSON file
+            config_path = os.path.join(os.path.dirname(__file__), 'data', 'app_config.json')
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(self.app_config, f, indent=4, ensure_ascii=False)
+            _debug_print(f"app_config.json saved to: {config_path}")
+
+            QMessageBox.information(self, "Ayarlar Kaydedildi", "Ayarlar başarıyla kaydedildi!")
+
+            # Reload pen colors in main window and tool window after config changes
+            self.main_window_ref.load_pen_colors_from_config()
+            # Only try to update tool_window if it exists (i.e., if paint_window was ever opened)
+            if hasattr(self.main_window_ref, 'tool_window') and self.main_window_ref.tool_window:
+                self.main_window_ref.tool_window.load_tool_window_colors_from_config()
+            self.load_pen_colors_to_settings_ui()  # Reload in settings UI too
+
+        except Exception as e:
+            log_error(f"Ayarlar kaydedilirken hata: {e}", sys.exc_info())
+            QMessageBox.critical(self, "Kaydetme Hatası", f"Ayarlar kaydedilirken bir hata oluştu: {e}")
+
+    def close_settings_window(self):
+        """Closes the settings window and shows the main window."""
+        try:
+            self.close()
+            if self.main_window_ref:
+                self.main_window_ref.show()
+        except Exception as e:
+            log_error(f"Ayarlar penceresi kapatılırken hata: {e}", sys.exc_info())
+
+    def closeEvent(self, event):
+        """Overrides closeEvent to ensure main window is shown when settings window is closed."""
+        try:
+            if self.main_window_ref:
+                self.main_window_ref.show()
+        except Exception as e:
+            log_error(f"Ayarlar penceresi closeEvent hatası: {e}", sys.exc_info())
+        super().closeEvent(event)
+
+
 if __name__ == '__main__':
     # Increase recursion limit if needed for deep call stacks (e.g., complex UI loading)
     sys.setrecursionlimit(10000)
@@ -1227,6 +1985,7 @@ if __name__ == '__main__':
         sys.exit(app.exec_())
     except Exception as e:
         error_msg = f"Kritik uygulama başlangıç hatası: {e}"
+        # Always print critical errors
         print(error_msg)
         log_error(error_msg, sys.exc_info())
         sys.exit(1)

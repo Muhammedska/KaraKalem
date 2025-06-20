@@ -176,3 +176,791 @@ xml.etree.ElementTree.ParseError: not well-formed (invalid token): line 7, colum
 [2025-06-19 09:24:17] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
 --------------------------------------------------
 
+[2025-06-20 09:25:14] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 09:25:19] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:41:12] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 09:41:15] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:41:15] Hata: UI'da 'undo' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:41:39] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:42:15] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 09:42:20] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:43:25] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:50:27] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 09:50:29] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:50:35] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:51:33] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:55:28] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 09:55:31] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 09:55:40] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:01:09] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:01:11] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:01:11] Hata: UI'da 'save_drawing_btn' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:01:17] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:01:17] Hata: UI'da 'save_drawing_btn' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:01:42] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:01:42] Hata: UI'da 'save_drawing_btn' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:07:53] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:07:55] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:08:00] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:08:24] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:08:35] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:16:36] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:16:38] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:16:46] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:27:36] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:27:39] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:27:56] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:28:17] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:32:44] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:32:45] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:32:52] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:38:14] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:38:16] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:38:33] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:43:33] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:43:35] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:43:39] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:44:04] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:50:14] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:50:16] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:50:35] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:50:48] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:54:43] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:54:45] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:54:55] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:58:39] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 10:58:42] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 10:58:49] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:03:19] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:03:23] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:03:26] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:03:30] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:03:31] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:03:37] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:24:29] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:24:31] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:24:41] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:25:31] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:29:33] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:29:36] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:29:47] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:39:05] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:39:07] Hata: Otomatik çizim kaydedilirken hata: sip.voidptr object has an unknown size
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 817, in _save_current_drawing_auto
+    for i in range(0, len(byte_array), 4):
+IndexError: sip.voidptr object has an unknown size
+--------------------------------------------------
+
+[2025-06-20 11:39:07] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:39:08] Hata: Otomatik çizim kaydedilirken hata: sip.voidptr object has an unknown size
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 817, in _save_current_drawing_auto
+    for i in range(0, len(byte_array), 4):
+IndexError: sip.voidptr object has an unknown size
+--------------------------------------------------
+
+[2025-06-20 11:39:11] Hata: Otomatik çizim kaydedilirken hata: sip.voidptr object has an unknown size
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 817, in _save_current_drawing_auto
+    for i in range(0, len(byte_array), 4):
+IndexError: sip.voidptr object has an unknown size
+--------------------------------------------------
+
+[2025-06-20 11:39:17] Hata: Otomatik çizim kaydedilirken hata: sip.voidptr object has an unknown size
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 817, in _save_current_drawing_auto
+    for i in range(0, len(byte_array), 4):
+IndexError: sip.voidptr object has an unknown size
+--------------------------------------------------
+
+[2025-06-20 11:39:17] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:39:19] Hata: Otomatik çizim kaydedilirken hata: sip.voidptr object has an unknown size
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 817, in _save_current_drawing_auto
+    for i in range(0, len(byte_array), 4):
+IndexError: sip.voidptr object has an unknown size
+--------------------------------------------------
+
+[2025-06-20 11:39:24] Hata: Otomatik çizim kaydedilirken hata: sip.voidptr object has an unknown size
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 817, in _save_current_drawing_auto
+    for i in range(0, len(byte_array), 4):
+IndexError: sip.voidptr object has an unknown size
+--------------------------------------------------
+
+[2025-06-20 11:44:00] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:44:02] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:44:17] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:44:47] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:44:49] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:48:28] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:48:30] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:48:40] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 11:53:38] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 11:53:40] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:02:51] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 12:02:54] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:03:50] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:04:12] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:16:33] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 12:16:36] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:16:45] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:18:08] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 12:18:10] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:18:18] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:18:33] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 12:28:16] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 12:34:14] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 12:37:45] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 12:45:44] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 12:52:24] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:05:33] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:05:33] Hata: Kritik uygulama başlangıç hatası: 'NoneType' object has no attribute 'clicked'
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1682, in <module>
+    main_app_window = Ui()
+  File "D:\gitrepos\KaraKalem\movable.py", line 277, in __init__
+    self.findChild(QPushButton, "eraser").clicked.connect(self.close)
+AttributeError: 'NoneType' object has no attribute 'clicked'
+--------------------------------------------------
+
+[2025-06-20 13:06:34] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:06:34] Hata: Kritik uygulama başlangıç hatası: 'NoneType' object has no attribute 'clicked'
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1682, in <module>
+    main_app_window = Ui()
+  File "D:\gitrepos\KaraKalem\movable.py", line 277, in __init__
+    self.findChild(QPushButton, "eraser").clicked.connect(self.close)
+AttributeError: 'NoneType' object has no attribute 'clicked'
+--------------------------------------------------
+
+[2025-06-20 13:07:10] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:07:10] Hata: Kritik uygulama başlangıç hatası: 'NoneType' object has no attribute 'clicked'
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1682, in <module>
+    main_app_window = Ui()
+  File "D:\gitrepos\KaraKalem\movable.py", line 277, in __init__
+    self.findChild(QPushButton, "eraser").clicked.connect(self.close)
+AttributeError: 'NoneType' object has no attribute 'clicked'
+--------------------------------------------------
+
+[2025-06-20 13:07:50] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:07:50] Hata: Kritik uygulama başlangıç hatası: 'NoneType' object has no attribute 'clicked'
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1682, in <module>
+    main_app_window = Ui()
+  File "D:\gitrepos\KaraKalem\movable.py", line 277, in __init__
+    self.findChild(QPushButton, "eraser").clicked.connect(self.close)
+AttributeError: 'NoneType' object has no attribute 'clicked'
+--------------------------------------------------
+
+[2025-06-20 13:14:31] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:14:31] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 13:14:33] Hata: UI'da 'close_settings_btn' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 13:20:19] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:20:19] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 13:29:36] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:29:36] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 13:35:41] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:35:41] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 13:35:53] Hata: Ayarlar kaydedilirken hata: 'Ui' object has no attribute 'tool_window'
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1956, in save_settings_from_ui
+    if self.main_window_ref.tool_window:
+AttributeError: 'Ui' object has no attribute 'tool_window'
+--------------------------------------------------
+
+[2025-06-20 13:40:37] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:40:37] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 13:55:50] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 13:55:50] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:03:10] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:03:10] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:09:17] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:09:17] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:23:22] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:23:22] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:23:24] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:28:34] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:28:35] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:32:15] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:32:15] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:38:43] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:38:43] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:38:50] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:39:17] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:39:22] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:48:50] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:48:50] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:48:52] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:49:59] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:53:48] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:53:48] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:55:18] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:55:18] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:55:19] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:55:33] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:55:33] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:55:35] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:55:48] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:55:48] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:55:50] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:56:02] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:56:02] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:56:16] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:56:16] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:56:18] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:56:50] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 14:56:50] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 14:56:56] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:43:15] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 16:43:15] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:43:21] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:44:14] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:44:36] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:45:02] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:45:34] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:46:08] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 16:46:08] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:46:10] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:47:59] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 16:47:59] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:48:01] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:49:47] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 16:49:47] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:49:51] Hata: Araç UI dosyası 'D:\gitrepos\KaraKalem\data\pen_tool.ui' yüklenirken hata oluştu: mismatched tag: line 15, column 16
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1360, in __init__
+    uic.loadUi(ui_path, self)  # Load the UI from the .ui file
+  File "C:\python\lib\site-packages\PyQt5\uic\__init__.py", line 241, in loadUi
+    return DynamicUILoader(package).loadUi(uifile, baseinstance, resource_suffix)
+  File "C:\python\lib\site-packages\PyQt5\uic\Loader\loader.py", line 66, in loadUi
+    return self.parse(filename, resource_suffix)
+  File "C:\python\lib\site-packages\PyQt5\uic\uiparser.py", line 1020, in parse
+    document = parse(filename)
+  File "C:\python\lib\xml\etree\ElementTree.py", line 1202, in parse
+    tree.parse(source, parser)
+  File "C:\python\lib\xml\etree\ElementTree.py", line 595, in parse
+    self._root = parser._parse_whole(source)
+  File "<string>", line None
+xml.etree.ElementTree.ParseError: mismatched tag: line 15, column 16
+--------------------------------------------------
+
+[2025-06-20 16:50:01] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 16:50:01] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:50:03] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:54:38] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 16:54:38] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:58:02] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 16:58:02] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:58:04] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:58:14] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 16:58:14] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 16:58:18] Hata: Araç UI dosyası 'D:\gitrepos\KaraKalem\data\pen_tool.ui' yüklenirken hata oluştu: mismatched tag: line 15, column 16
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1360, in __init__
+    uic.loadUi(ui_path, self)  # Load the UI from the .ui file
+  File "C:\python\lib\site-packages\PyQt5\uic\__init__.py", line 241, in loadUi
+    return DynamicUILoader(package).loadUi(uifile, baseinstance, resource_suffix)
+  File "C:\python\lib\site-packages\PyQt5\uic\Loader\loader.py", line 66, in loadUi
+    return self.parse(filename, resource_suffix)
+  File "C:\python\lib\site-packages\PyQt5\uic\uiparser.py", line 1020, in parse
+    document = parse(filename)
+  File "C:\python\lib\xml\etree\ElementTree.py", line 1202, in parse
+    tree.parse(source, parser)
+  File "C:\python\lib\xml\etree\ElementTree.py", line 595, in parse
+    self._root = parser._parse_whole(source)
+  File "<string>", line None
+xml.etree.ElementTree.ParseError: mismatched tag: line 15, column 16
+--------------------------------------------------
+
+[2025-06-20 17:01:44] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:01:44] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:01:53] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:02:07] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:02:07] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:02:08] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:18:58] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:18:58] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:19:32] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:19:32] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:19:47] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:19:47] Hata: UI'da 'eraser' butonu bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:19:50] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:20:56] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:21:57] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:23:33] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:23:54] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:24:23] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:27:31] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:31:00] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:31:03] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:31:28] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:34:02] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:34:06] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:34:20] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:34:23] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:34:35] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:34:38] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:38:43] Hata: Uyarı: Uygulama simgesi bulunamadı: D:\gitrepos\KaraKalem\icons/app_icon.ico
+--------------------------------------------------
+
+[2025-06-20 17:38:47] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:43:19] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:47:14] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:47:28] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:47:54] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:48:15] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:48:49] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:49:53] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:54:21] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 17:54:45] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-20 18:04:15] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
