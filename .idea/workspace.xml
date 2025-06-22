@@ -32,29 +32,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.5nokta.executor": "Run",
-    "Python.app deep seek.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.app_deep_seek.executor": "Run",
-    "Python.app_deep_seek2.executor": "Run",
-    "Python.app_deep_seek2_regionss.executor": "Run",
-    "Python.app_deep_seek2_vpro_demo_geri.executor": "Run",
-    "Python.deepseek denemesi.executor": "Run",
-    "Python.deepseek denemesiv2.executor": "Run",
-    "Python.gemini revize.executor": "Run",
-    "Python.karakalem.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.mdebug.executor": "Run",
-    "Python.movable.executor": "Run",
-    "Python.opt.executor": "Run",
-    "Python.region_moded.executor": "Run",
-    "Python.test.executor": "Run",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/gitrepos/KaraKalem/data"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.5nokta.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app deep seek.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app_deep_seek.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app_deep_seek2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app_deep_seek2_regionss.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app_deep_seek2_vpro_demo_geri.executor&quot;: &quot;Run&quot;,
+    &quot;Python.deepseek denemesi.executor&quot;: &quot;Run&quot;,
+    &quot;Python.deepseek denemesiv2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.gemini revize.executor&quot;: &quot;Run&quot;,
+    &quot;Python.karakalem.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mdebug.executor&quot;: &quot;Run&quot;,
+    &quot;Python.movable.executor&quot;: &quot;Run&quot;,
+    &quot;Python.opt.executor&quot;: &quot;Run&quot;,
+    &quot;Python.region_moded.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/gitrepos/KaraKalem/data&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\gitrepos\KaraKalem\data" />
