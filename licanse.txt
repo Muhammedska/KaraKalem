@@ -1,0 +1,48 @@
+YAZILIM LİSANS SÖZLEŞMESİ (END USER LICENSE AGREEMENT - EULA)
+© Çözelti Software — Tüm Hakları Saklıdır
+Yürürlük Tarihi: 22.06.2025
+
+1. TANIMLAR
+İşbu Lisans Sözleşmesi (“Sözleşme”), yazılımı geliştiren kişi veya kuruluş olan Çözelti Software (bundan sonra “Lisans Sahibi” olarak anılacaktır) ile bu yazılımı edinen son kullanıcı (“Kullanıcı”) arasında akdedilmiştir. “Yazılım”, tüm kaynak kodları, çalıştırılabilir dosyalar, veritabanları, kullanıcı arayüzleri, dökümantasyon ve ilgili tüm dijital bileşenleri ifade eder.
+
+2. LİSANS VERİLMESİ
+Lisans Sahibi, Kullanıcı’ya bu Yazılımı yalnızca kişisel, ticari olmayan ve sınırlı kullanım amacıyla çalıştırma hakkı verir. Bu lisans devredilemez, alt lisans verilemez ve münhasır olmayan bir niteliktedir.
+
+3. MÜLKİYET VE TELİF HAKLARI
+Yazılım üzerindeki tüm fikri mülkiyet hakları, ticari markalar, tasarımlar ve içerik, 5846 sayılı Fikir ve Sanat Eserleri Kanunu ve uluslararası telif hakkı sözleşmeleri uyarınca Çözelti Software’e aittir. Yazılımın tamamı ya da bir kısmı, yazılı izin alınmaksızın hiçbir şekilde:
+
+Çoğaltılamaz,
+
+Yayınlanamaz,
+
+Ters mühendisliğe tabi tutulamaz,
+
+Dağıtılamaz,
+
+Satılamaz veya ticari amaçlarla kullanılamaz.
+
+4. KISITLAMALAR
+Kullanıcı, aşağıdaki eylemleri gerçekleştiremez:
+
+Yazılımın kaynak kodunu analiz etme, değiştirme veya yeniden oluşturma,
+
+Yazılımı üçüncü şahıslara lisanslama veya devretme,
+
+Yazılımı bulut hizmetleri aracılığıyla çok kullanıcılı bir sistemde paylaşma,
+
+Yazılımı herhangi bir marka altında tekrar paketleme.
+
+5. GARANTİ REDDİ VE SORUMLULUK SINIRLAMASI
+Yazılım “olduğu gibi” sunulmaktadır ve açık ya da örtük hiçbir garanti verilmemektedir. Lisans Sahibi, Yazılım’ın kullanımından doğabilecek doğrudan, dolaylı, arızi, özel veya cezai zararlardan sorumlu tutulamaz.
+
+6. LİSANS İHLALİ VE YAPTIRIMLAR
+İşbu Sözleşmenin ihlali halinde Lisans Sahibi, yasal ve cezai her türlü yola başvurma hakkını saklı tutar. Hukuki süreçler, Türkiye Cumhuriyeti yasaları çerçevesinde yürütülür ve yetkili mahkemeler [Lisans Sahibinin bulunduğu şehir] mahkemeleridir.
+
+7. GİZLİLİK VE VERİ
+Yazılım, kullanıcı verilerini izlememekte veya üçüncü taraflarla paylaşmamaktadır. Ancak kullanıcı verileri, güvenlik ve kullanım analizleri için anonimleştirilerek sistem içinde toplanabilir.
+
+8. SÖZLEŞMENİN FESHİ
+Bu Sözleşme, Kullanıcı’nın lisans koşullarını ihlal etmesi halinde kendiliğinden sona erer. Fesih halinde Kullanıcı, Yazılımı ve tüm kopyalarını derhal sisteminden silmekle yükümlüdür.
+
+©2025 Çözelti Software – Tüm Hakları Saklıdır
+Bu yazılım, yasal koruma altındadır. Her türlü kullanım ve çoğaltma hakkı yalnızca Lisans Sahibi'ne aittir. Yazılı izin olmadan ticari amaçla kullanılması, Türk Ceza Kanunu, FSEK ve ilgili uluslararası mevzuata göre suç teşkil eder.
