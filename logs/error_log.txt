@@ -964,3 +964,127 @@ xml.etree.ElementTree.ParseError: mismatched tag: line 15, column 16
 [2025-06-20 18:04:15] Hata: UI'da 'move_btn' bulunamadı.
 --------------------------------------------------
 
+[2025-06-24 18:25:35] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 18:26:16] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 18:27:58] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 18:38:25] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 19:00:56] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 19:11:51] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 19:24:36] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 19:24:36] Hata: UI'da 'horizontalSlider' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 19:25:39] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 19:30:44] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 19:44:01] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 19:46:07] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 20:49:18] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 20:49:53] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 21:12:43] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 21:26:18] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 21:28:50] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 21:39:59] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 21:45:43] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 21:52:34] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:00:07] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:05:57] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:17:19] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:25:02] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:33:39] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:37:16] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:40:46] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:43:51] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:44:10] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:51:39] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 22:55:35] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 23:04:18] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 23:04:40] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 23:13:02] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 23:19:10] Hata: Çizim durumu kaydedilirken hata: 'PaintCanvasWindow' object has no attribute 'auto_save_timer'
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1004, in save_drawing_state
+    self.auto_save_timer.start()
+AttributeError: 'PaintCanvasWindow' object has no attribute 'auto_save_timer'
+--------------------------------------------------
+
+[2025-06-24 23:19:10] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+
+[2025-06-24 23:20:01] Hata: Çizim durumu kaydedilirken hata: 'PaintCanvasWindow' object has no attribute 'auto_save_timer'
+Hata Detayı:
+Traceback (most recent call last):
+  File "D:\gitrepos\KaraKalem\movable.py", line 1004, in save_drawing_state
+    self.auto_save_timer.start()
+AttributeError: 'PaintCanvasWindow' object has no attribute 'auto_save_timer'
+--------------------------------------------------
+
+[2025-06-24 23:20:01] Hata: UI'da 'move_btn' bulunamadı.
+--------------------------------------------------
+

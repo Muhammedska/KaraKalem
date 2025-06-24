@@ -5,7 +5,7 @@ import json
 import datetime
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QComboBox, QMessageBox, QFrame, QPushButton, \
-    QSlider, QFileDialog, QColorDialog  # QColorDialog'u import et
+    QSlider, QFileDialog, QColorDialog, QSpinBox
 from PyQt5.QtCore import Qt, QPoint, QRect, QSize, QTimer, QBuffer, QByteArray
 from PyQt5.QtGui import QColor, QPen, QPainter, QImage, QPixmap, QCursor, QIcon, qAlpha, qRed, qGreen, qBlue
 
@@ -197,7 +197,8 @@ class CursorManager:
 
 
 _SCRIPT_DIR = os.path.dirname(__file__)
-_AUTO_SAVE_DRAWING_FILE = os.path.join(_SCRIPT_DIR, 'data', 'auto_saved_drawing.txt')
+# Otomatik kaydetme dosyası adı ve yolu güncellendi
+_AUTO_SAVE_DRAWING_FILE = os.path.join(_SCRIPT_DIR, 'data', 'auto_saved_drawing.png')
 
 
 class Ui(QMainWindow):
@@ -399,6 +400,10 @@ class Ui(QMainWindow):
                 # Trim if there are too many colors (optional, but good for fixed UI)
                 config_data["pen_colors"] = config_data["pen_colors"][:len(default_colors)]
 
+                # Ensure initial_smoothing_factor exists
+                if "initial_smoothing_factor" not in config_data:
+                    config_data["initial_smoothing_factor"] = 5  # Default smoothing factor
+
                 return config_data
         except FileNotFoundError:
             error_msg = f"Hata: Uygulama yapılandırma dosyası bulunamadı: {config_path}"
@@ -413,7 +418,8 @@ class Ui(QMainWindow):
                 "main_ui_file": "undockapp.ui",
                 "tool_ui_file": "pen_tool.ui",
                 "tool_window_position": {"x_offset_from_paint_window": -20, "y_offset_from_paint_window": 20},
-                "pen_colors": ["#FF0000", "#0000FF", "#000000", "#008000", "#800080", "#FFA500"]
+                "pen_colors": ["#FF0000", "#0000FF", "#000000", "#008000", "#800080", "#FFA500"],
+                "initial_smoothing_factor": 5
             }
             try:
                 os.makedirs(os.path.dirname(config_path), exist_ok=True)
@@ -526,7 +532,7 @@ class Ui(QMainWindow):
         try:
             self.active_color = color
             if self.color_indicator:
-                self.color_indicator.setStyleSheet(f"background-color: {color.name()}; border-radius: 5px;")
+                self.color_indicator.setStyleSheet(f"background-color: {self.active_color.name()}; border-radius: 5px;")
         except Exception as e:
             error_msg = f"Renk ayarlama hatası: {e}"
             # Always print errors
@@ -557,9 +563,13 @@ class Ui(QMainWindow):
             screenshot = self._capture_screenshot_pixmap()
             if screenshot:
                 try:
+                    # Ensure initial_brush_color passed to PaintCanvasWindow has full opacity for pen tool
+                    initial_paint_color = QColor(self.active_color)
+                    initial_paint_color.setAlpha(255)  # Force full opacity for the initial launch of the paint window
+
                     self.paint_window = PaintCanvasWindow(
                         screenshot,
-                        self.active_color,
+                        initial_paint_color,  # Use the modified color with full alpha
                         self.active_size,
                         self  # Pass main window reference
                     )
@@ -680,7 +690,7 @@ class RegionSelector(QWidget):
         """Draws the transparent gray overlay and the red selection rectangle."""
         try:
             painter = QPainter(self)
-            painter.setPen(QPen(QColor(255, 0, 0, 255), 2, Qt.DashLine)) # red frame added Qt.red > is old
+            painter.setPen(QPen(QColor(255, 0, 0, 255), 2, Qt.DashLine))  # red frame added Qt.red > is old
             painter.drawRect(QRect(self.begin, self.end))
         except Exception as e:
             log_error(f"RegionSelector paintEvent hatası: {e}", sys.exc_info())
@@ -714,6 +724,8 @@ class PaintCanvasWindow(QMainWindow):
     with various tools (pen, eraser, shapes, highlighter).
     It also hosts the ToolWindow.
     """
+    MAX_UNDO_STATES = 10  # Maximum number of states to keep in the undo stack
+    AUTO_SAVE_INTERVAL_MS = 5000  # Auto-save interval in milliseconds (5 seconds)
 
     def __init__(self, background_pixmap, initial_brush_color, initial_brush_size,
                  main_window_ref):  # Get main window reference
@@ -749,6 +761,7 @@ class PaintCanvasWindow(QMainWindow):
 
         # Başlangıçtaki boş tuval durumunu kaydet (sadece bir kez, pencere ilk açıldığında)
         # Bu, undo yığınının ilk boş haliyle başlamasını sağlar
+        # save_drawing_state() now also triggers auto-save debounce
         self.save_drawing_state()
         _debug_print("PaintCanvasWindow başlatıldı, boş tuvalle başlandı.")
 
@@ -757,8 +770,23 @@ class PaintCanvasWindow(QMainWindow):
         # Drawing properties
         self.brush_color = initial_brush_color
         self.brush_size = initial_brush_size
+        self.brush_alpha = initial_brush_color.alpha()  # Initialize brush_alpha from the color passed
+
+        self.smoothing_factor = 0  # Default to no smoothing (0)
+        self.is_smoothing_enabled = False  # New flag: Is smoothing actively enabled by the checkbox?
+        # Initialize is_smoothing_enabled based on initial smoothing_factor from config
+        initial_config_smoothing = self.main_window_ref.app_config.get("initial_smoothing_factor", 0)
+        if initial_config_smoothing > 0:
+            self.is_smoothing_enabled = True
+            self.smoothing_factor = initial_config_smoothing  # Set initial factor
+        else:
+            self.smoothing_factor = 0
+            self.is_smoothing_enabled = False  # Explicitly set to false if default is 0
+
         self.active_tool = "pen"  # Default tool
         self.eraser_size = 20  # Silgi için başlangıç boyutu, kalemden ayrı tutulacak
+        self.line_style = Qt.SolidLine  # Varsayılan çizgi stili: Düz Çizgi
+        self.whiteboard_mode = False  # Beyaz tahta modu varsayılan olarak kapalı
 
         self.drawing = False  # Flag to indicate if drawing is active
         self.moving_image = False  # Flag to indicate if image is being moved
@@ -771,13 +799,20 @@ class PaintCanvasWindow(QMainWindow):
         self.original_pixmap_size = QSize()  # Stores initial size when resizing starts
         self.current_preview_rect = QRect()  # Stores the rectangle for resize preview
 
-        self.last_point = QPoint()  # Last point for continuous drawing (pen/eraser)
+        self.last_point = QPoint()  # Last point for continuous drawing (pen/eraser) - actual mouse position
+        self.last_drawn_point = QPoint()  # Last point that was actually drawn to (for smoothing)
         self.temp_start_point = QPoint()  # Start point for shape tools (line, rect, ellipse)
         self.temp_end_point = QPoint()  # End point for shape tools
 
         self.drag_offset = QPoint()  # Offset for dragging the image
 
         self.painter = None  # Initialize painter for continuous drawing
+
+        # Auto-save timer setup
+        self.auto_save_timer = QTimer(self)
+        self.auto_save_timer.setInterval(self.AUTO_SAVE_INTERVAL_MS)
+        self.auto_save_timer.setSingleShot(True)  # Ensure it only fires once after inactivity
+        self.auto_save_timer.timeout.connect(self._save_current_drawing_auto)
 
         # Create move image button
         self.move_image_btn = QPushButton("Görseli Taşı", self)
@@ -873,10 +908,16 @@ class PaintCanvasWindow(QMainWindow):
     def set_brush_color(self, color):
         """Sets the current brush color and updates the tool window's indicator."""
         try:
-            self.brush_color = color
+            # When setting color, apply the current brush_alpha unless it's a highlight tool
+            if self.active_tool != "highlight":
+                color_with_alpha = QColor(color.red(), color.green(), color.blue(), self.brush_alpha)
+            else:
+                # Highlighter tool handles its own alpha (it's already set to 51 when selected)
+                color_with_alpha = QColor(color.red(), color.green(), color.blue(), color.alpha())
+            self.brush_color = color_with_alpha
             # Update the selected color indicator in the tool window
             if self.tool_window:
-                self.tool_window.set_selected_color_indicator(color)
+                self.tool_window.set_selected_color_indicator(color_with_alpha)
         except Exception as e:
             log_error(f"Fırça rengi ayarlanırken hata: {e}", sys.exc_info())
 
@@ -894,13 +935,45 @@ class PaintCanvasWindow(QMainWindow):
         except Exception as e:
             log_error(f"Silgi boyutu ayarlanırken hata: {e}", sys.exc_info())
 
+    def set_brush_alpha(self, alpha):
+        """Sets the current brush alpha (opacity) and updates the brush color accordingly."""
+        try:
+            self.brush_alpha = alpha
+            # Update the brush color to reflect the new alpha, keeping the RGB values
+            current_rgb = self.brush_color.rgb()  # Get current RGB without alpha
+            new_color = QColor(current_rgb)
+            new_color.setAlpha(self.brush_alpha)
+            self.brush_color = new_color
+            # Update the selected color indicator in the tool window to reflect the alpha
+            if self.tool_window:
+                self.tool_window.set_selected_color_indicator(self.brush_color)
+            _debug_print(f"Fırça alfa değeri ayarlandı: {self.brush_alpha}")
+        except Exception as e:
+            log_error(f"Fırça alfa değeri ayarlanırken hata: {e}", sys.exc_info())
+
+    def set_smoothing_factor(self, factor):
+        """Sets the current smoothing factor for drawing."""
+        try:
+            self.smoothing_factor = factor
+            _debug_print(f"Düzleştirme faktörü ayarlandı: {self.smoothing_factor}")
+        except Exception as e:
+            log_error(f"Düzleştirme faktörü ayarlanırken hata: {e}", sys.exc_info())
+
+    def set_line_style(self, style):
+        """Sets the current line style (Solid, Dash, Dot)."""
+        try:
+            self.line_style = style
+            _debug_print(f"Çizgi stili ayarlandı: {style}")
+        except Exception as e:
+            log_error(f"Çizgi stili ayarlanırken hata: {e}", sys.exc_info())
+
     def clear_all_drawings(self):
         """Çizim katmanındaki tüm çizimleri temizler ve geri alma/yineleme yığınını sıfırlar."""
         try:
             self.overlay_image.fill(Qt.transparent)  # Çizim katmanını şeffaf renkle doldur
             self.save_drawing_state()  # Yeni boş durumu kaydet (undo stack için)
             self.update()  # Tuvalin temizlendiğini göstermek için yeniden boyama iste
-            self._save_current_drawing_auto()  # Otomatik kaydetme burada tetiklenir
+            # Auto-save will be triggered by save_drawing_state()
         except Exception as e:
             log_error(f"Çizimleri temizlerken hata: {e}", sys.exc_info())
 
@@ -911,7 +984,7 @@ class PaintCanvasWindow(QMainWindow):
             while len(self.undo_stack) > self.undo_index + 1:
                 self.undo_stack.pop()
 
-            # overlay_image'ın derin kopyasını al
+            # Yeni durum ekle
             copied_image = QImage(self.overlay_image.size(), self.overlay_image.format())
             painter = QPainter(copied_image)
             painter.drawImage(0, 0, self.overlay_image)
@@ -919,9 +992,16 @@ class PaintCanvasWindow(QMainWindow):
 
             self.undo_stack.append(copied_image)
             self.undo_index = len(self.undo_stack) - 1
-            # _debug_print(f"Durum kaydedildi. Stack boyutu: {len(self.undo_stack)}, Index: {self.undo_index}")
 
-            # Otomatik kaydetme artık burada çağrılmıyor
+            # Yığın boyutunu kontrol et ve eski durumları sil
+            if len(self.undo_stack) > self.MAX_UNDO_STATES:
+                self.undo_stack.pop(0)  # En eski durumu sil
+                self.undo_index -= 1  # İndeksi de güncelle
+
+            _debug_print(f"Durum kaydedildi. Stack boyutu: {len(self.undo_stack)}, Index: {self.undo_index}")
+
+            # Otomatik kaydetme zamanlayıcısını yeniden başlat (debounce)
+            self.auto_save_timer.start()
 
         except Exception as e:
             log_error(f"Çizim durumu kaydedilirken hata: {e}", sys.exc_info())
@@ -933,7 +1013,7 @@ class PaintCanvasWindow(QMainWindow):
                 self.undo_index -= 1
                 self.overlay_image = self.undo_stack[self.undo_index]
                 self.update()
-                # Otomatik kaydetme artık burada çağrılmıyor
+                self.auto_save_timer.start()  # Trigger auto-save debounce
             else:
                 _debug_print("Geri alınacak başka çizim yok.")
         except Exception as e:
@@ -946,7 +1026,7 @@ class PaintCanvasWindow(QMainWindow):
                 self.undo_index += 1
                 self.overlay_image = self.undo_stack[self.undo_index]
                 self.update()
-                # Otomatik kaydetme artık burada çağrılmıyor
+                self.auto_save_timer.start()  # Trigger auto-save debounce
             else:
                 _debug_print("İleri alınacak başka çizim yok.")
         except Exception as e:
@@ -961,9 +1041,9 @@ class PaintCanvasWindow(QMainWindow):
             # Yüklendikten sonra undo stack'i sıfırla ve yeni görüntüyü ilk durum olarak ekle
             self.undo_stack = [QImage(self.overlay_image)]  # Use the newly copied overlay_image for the stack
             self.undo_index = 0
-
+            # Otomatik kaydetme zamanlayıcısını yeniden başlat (debounce)
+            self.auto_save_timer.start()
             self.update()  # Yeni görüntüyü ekranda göstermek için güncelleme iste
-            # Otomatik kaydetme artık burada çağrılmıyor
         except Exception as e:
             log_error(f"Çizim katmanı görüntüsü ayarlanırken hata: {e}", sys.exc_info())
 
@@ -971,35 +1051,50 @@ class PaintCanvasWindow(QMainWindow):
         """
         Mevcut çizimi (overlay_image) Base64 kodlu PNG string olarak
         önceden tanımlanmış otomatik kayıt dosyasına kaydeder.
+        Bu metod, auto_save_timer tarafından tetiklenir.
         """
         try:
             # Dosya dizininin var olduğundan emin olun
             os.makedirs(os.path.dirname(_AUTO_SAVE_DRAWING_FILE), exist_ok=True)
 
-            # --- Hata Ayıklama İçin Geçici PNG Kaydı ---
-            temp_debug_file = os.path.join(os.path.dirname(__file__), 'debug_overlay_temp.png')
-            self.overlay_image.save(temp_debug_file, "PNG")
-            _debug_print(f"Hata ayıklama için geçici çizim kaydedildi: {temp_debug_file}")
-            # --- Hata Ayıklama İçin Geçici PNG Kaydı SONU ---
-
             buffer = QBuffer()
             buffer.open(QBuffer.WriteOnly)
+            # PNG olarak doğrudan kaydet
             self.overlay_image.save(buffer, "PNG")
             png_data = buffer.data()
             buffer.close()
 
-            base64_data = png_data.toBase64().data().decode('utf-8')
+            # Doğrudan PNG baytlarını dosyaya yaz, Base64 kodlamasına gerek yok
+            with open(_AUTO_SAVE_DRAWING_FILE, 'wb') as f:  # 'wb' -> write binary
+                f.write(png_data.data())
 
             has_visible_content = _check_qimage_for_visible_content(self.overlay_image)
-
             _debug_print(f"Saved overlay_image contains visible content: {has_visible_content}")
             _debug_print(
-                f"Otomatik kaydedildi. Resim Boyutu: {self.overlay_image.size().width()}x{self.overlay_image.size().height()}, Base64 Uzunluğu: {len(base64_data)}")
+                f"Otomatik kaydedildi. Resim Boyutu: {self.overlay_image.size().width()}x{self.overlay_image.size().height()}, PNG Boyutu: {len(png_data.data())} bytes")
 
-            with open(_AUTO_SAVE_DRAWING_FILE, 'w', encoding='utf-8') as f:
-                f.write(base64_data)
         except Exception as e:
             log_error(f"Otomatik çizim kaydedilirken hata: {e}", sys.exc_info())
+
+    def toggle_whiteboard_mode(self):
+        """Toggles between normal drawing mode and whiteboard mode."""
+        try:
+            self.whiteboard_mode = not self.whiteboard_mode
+            if self.whiteboard_mode:
+                # Clear existing drawings and background when entering whiteboard mode
+                self.overlay_image.fill(Qt.transparent)
+                self.background_pixmap = QPixmap()  # Clear background image
+                QMessageBox.information(self, "Mod Değişikliği", "Beyaz Tahta Modu AÇIK. Arka plan temizlendi.")
+            else:
+                # When exiting whiteboard mode, clear overlay but don't restore old screenshot
+                self.overlay_image.fill(Qt.transparent)
+                QMessageBox.information(self, "Mod Değişikliği",
+                                        "Beyaz Tahta Modu KAPALI. Tuval varsayılana döndürüldü.")
+
+            self.save_drawing_state()  # Save new state to undo stack (and trigger auto-save debounce)
+            self.update()  # Repaint
+        except Exception as e:
+            log_error(f"toggle_whiteboard_mode hatası: {e}", sys.exc_info())
 
     def mousePressEvent(self, event):
         """Handles mouse press events for drawing, moving, and resizing the image."""
@@ -1039,7 +1134,8 @@ class PaintCanvasWindow(QMainWindow):
                         self.setCursor(CursorManager.get_cursor("move_active"))  # JSON'dan imleç çek
                 else:  # Drawing initiated
                     self.drawing = True
-                    self.last_point = event.pos()  # These are now always window-relative
+                    self.last_point = event.pos()  # Initialize last_point to the actual mouse position
+                    self.last_drawn_point = event.pos()  # Initialize last_drawn_point for smoothing to current pos
                     self.temp_start_point = event.pos()  # These are now always window-relative
 
                     # Add debug print for brush color alpha
@@ -1049,17 +1145,24 @@ class PaintCanvasWindow(QMainWindow):
                     # Start QPainter for continuous drawing (pen, eraser, highlight)
                     if self.active_tool in ["pen", "eraser", "highlight"]:
                         self.painter = QPainter(self.overlay_image)
-                        self.painter.begin(self.overlay_image)  # Explicitly begin painting
+                        # Enable antialiasing for continuous drawing
+                        self.painter.setRenderHint(QPainter.Antialiasing, True)
+
                         if self.active_tool == "eraser":
                             self.painter.setCompositionMode(QPainter.CompositionMode_Clear)
                             # Silgi kalınlığı için self.eraser_size kullan
                             pen = QPen(Qt.transparent, self.eraser_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
                         elif self.active_tool == "highlight":
-                            self.painter.setCompositionMode(QPainter.CompositionMode_Screen)
+                            # Use SourceOver for highlight to prevent infinite brightening
+                            self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+                            # Use brush_size for highlight thickness and current brush_color (with its alpha)
                             pen = QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
                         else:  # Pen
-                            self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
-                            pen = QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+                            self.painter.setCompositionMode(
+                                QPainter.CompositionMode_SourceOver)  # Keep SourceOver for blending
+                            # Use the selected line style for the pen tool
+                            # Use self.brush_color which already has the correct alpha
+                            pen = QPen(self.brush_color, self.brush_size, self.line_style, Qt.RoundCap, Qt.RoundJoin)
                         self.painter.setPen(pen)
 
         except Exception as e:
@@ -1103,11 +1206,40 @@ class PaintCanvasWindow(QMainWindow):
                 self.move_image_btn.move(button_x, button_y)
                 self.update()
             elif self.drawing and (event.buttons() & Qt.LeftButton):
-                if self.active_tool in ["pen", "eraser", "highlight"] and self.painter:
-                    self.painter.drawLine(self.last_point, event.pos())  # Drawing with window-relative coords
-                    self.last_point = event.pos()
-                self.temp_end_point = event.pos()  # Always window-relative
-                self.update()  # Request repaint for the whole window
+                current_mouse_pos = event.pos()
+
+                if self.active_tool in ["pen", "highlight"] and self.painter:
+                    # Only apply smoothing if the flag is enabled AND smoothing_factor is > 0
+                    if self.is_smoothing_enabled and self.smoothing_factor > 0:
+                        max_smoothing_value = 10  # Matches QSpinBox max
+                        smoothing_normalized = self.smoothing_factor / max_smoothing_value
+
+                        # Calculate the new smoothed point
+                        blended_x = self.last_drawn_point.x() + (current_mouse_pos.x() - self.last_drawn_point.x()) * (
+                                    1.0 - smoothing_normalized)
+                        blended_y = self.last_drawn_point.y() + (current_mouse_pos.y() - self.last_drawn_point.y()) * (
+                                    1.0 - smoothing_normalized)
+                        new_point_smoothed = QPoint(int(blended_x), int(blended_y))
+
+                        # Always draw from the last drawn smoothed point to the newly calculated smoothed point
+                        self.painter.drawLine(self.last_drawn_point, new_point_smoothed)
+                        self.last_drawn_point = new_point_smoothed  # Update to the new smoothed point
+
+                    else:  # No smoothing, or smoothing explicitly disabled
+                        # When no smoothing, simply draw from the last actual mouse point to the current mouse point
+                        self.painter.drawLine(self.last_point, current_mouse_pos)
+                        # For no smoothing, last_drawn_point should also follow the raw mouse movement
+                        self.last_drawn_point = current_mouse_pos
+
+                elif self.active_tool == "eraser" and self.painter:
+                    # Eraser clears, so overlapping is not a concern, and precise clearing needs all movements
+                    self.painter.drawLine(self.last_point, current_mouse_pos)
+
+                # Always update last_point to the current mouse position for the next event,
+                # as it represents the *actual* mouse position at this moment.
+                self.last_point = current_mouse_pos
+                self.temp_end_point = current_mouse_pos  # For shape previews
+                self.update()
         except Exception as e:
             log_error(f"PaintCanvasWindow mouseMoveEvent hatası: {e}", sys.exc_info())
 
@@ -1146,26 +1278,23 @@ class PaintCanvasWindow(QMainWindow):
                         self.painter = None
 
                     # For shapes (line, rect, ellipse), draw them once on release
+                    # HIGHLIGHT removed from this list as it's now continuous
                     if self.active_tool in ["line", "rect", "ellipse"]:
                         painter = QPainter(self.overlay_image)
-                        if self.active_tool == "highlight":  # Highlighter modu için özel harmanlama modu
-                            painter.setCompositionMode(QPainter.CompositionMode_Screen)
-                        else:  # Diğer tüm araçlar (kalem, şekiller vb.) için normal harmanlama
-                            painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+                        painter.setRenderHint(QPainter.Antialiasing, True)
 
-                        painter.setPen(QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                        # Set normal blending for other shapes
+                        painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+                        painter.setPen(
+                            QPen(self.brush_color, self.brush_size, self.line_style, Qt.RoundCap, Qt.RoundJoin))
 
                         if self.active_tool == "line":
-                            painter.drawLine(self.temp_start_point, event.pos())  # Drawing with window-relative coords
+                            painter.drawLine(self.temp_start_point, event.pos())
                         elif self.active_tool == "rect":
-                            painter.drawRect(
-                                QRect(self.temp_start_point,
-                                      event.pos()).normalized())  # Drawing with window-relative coords
+                            painter.drawRect(QRect(self.temp_start_point, event.pos()).normalized())
                         elif self.active_tool == "ellipse":
-                            painter.drawEllipse(
-                                QRect(self.temp_start_point,
-                                      event.pos()).normalized())  # Drawing with window-relative coords
-                        painter.end()  # End painter for overlay_image to apply changes
+                            painter.drawEllipse(QRect(self.temp_start_point, event.pos()).normalized())
+                        painter.end()
 
                     self.drawing = False  # Reset drawing flag after all operations
                     self.update()  # Request repaint for the whole window
@@ -1218,11 +1347,15 @@ class PaintCanvasWindow(QMainWindow):
             painter = QPainter(self)
             painter.setRenderHint(QPainter.Antialiasing)  # For smoother lines/shapes
 
-            # 1) Fill the entire canvas background with light gray
-            painter.fillRect(self.rect(), QColor(245, 245, 245))
+            # 1) Fill the entire canvas background with light gray or white based on whiteboard_mode
+            if self.whiteboard_mode:
+                painter.fillRect(self.rect(), Qt.white)
+            else:
+                painter.fillRect(self.rect(), QColor(245, 245, 245))
 
             # 2) Draw the background pixmap (if any) at its current position
-            if not self.background_pixmap.isNull():
+            # Only draw background pixmap if not in whiteboard mode
+            if not self.background_pixmap.isNull() and not self.whiteboard_mode:
                 painter.drawPixmap(self.image_pos, self.background_pixmap)
 
                 # Draw a dashed frame around the image if not resizing
@@ -1239,10 +1372,11 @@ class PaintCanvasWindow(QMainWindow):
                 f"paintEvent: overlay_image isNull: {self.overlay_image.isNull()}, Size: {self.overlay_image.size().width()}x{self.overlay_image.size().height()}, Format: {self.overlay_image.format()}")
 
             # 4) Draw preview for shape tools (line, rect, ellipse) using window-relative coordinates
-            # This preview must be drawn on the window's painter, not the overlay_image's painter
+            # HIGHLIGHT removed from this list as it no longer uses a shape preview
             if self.drawing and self.active_tool in ["line", "rect", "ellipse"]:
-                pen = QPen(self.brush_color, self.brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
-                pen.setStyle(Qt.DashLine)  # Use dashed line for preview
+                # Existing logic for line, rect, ellipse previews
+                pen = QPen(self.brush_color, self.brush_size, self.line_style, Qt.RoundCap, Qt.RoundJoin)
+                pen.setStyle(Qt.DashLine)
                 painter.setPen(pen)
                 if self.active_tool == "line":
                     painter.drawLine(self.temp_start_point, self.temp_end_point)
@@ -1250,6 +1384,8 @@ class PaintCanvasWindow(QMainWindow):
                     painter.drawRect(QRect(self.temp_start_point, self.temp_end_point).normalized())
                 elif self.active_tool == "ellipse":
                     painter.drawEllipse(QRect(self.temp_start_point, self.temp_end_point).normalized())
+                # Reset composition mode to default after drawing preview to avoid affecting other elements
+                painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
 
             # 5) Draw the resize handle and preview rectangle if resizing is active
             if not self.background_pixmap.isNull():
@@ -1310,9 +1446,10 @@ class PaintCanvasWindow(QMainWindow):
         saves the current drawing state, and reopens the main UI window.
         """
         try:
-            # Mevcut çizim durumunu kaydet
-            self._save_current_drawing_auto()  # Otomatik kaydetme burada tetiklenir
-            _debug_print("Çizim penceresi kapatılırken otomatik kaydetme tetiklendi.")
+            # Mevcut çizim durumunu kaydet (eğer bekleyen bir auto-save varsa hemen tetikle)
+            self._save_current_drawing_auto()
+            self.auto_save_timer.stop()  # Ensure timer is stopped on close
+            _debug_print("Çizim penceresi kapatılırken otomatik kaydetme tetiklendi ve zamanlayıcı durduruldu.")
 
             self.close_tool_window()
             # Ensure the main window is reopened after this window closes
@@ -1333,7 +1470,7 @@ class ToolWindow(QWidget):
         self.paint_window = parent_paint_window
         self.app_config = app_config  # app_config'i sakla
         self.setWindowTitle("Çizim Araçları")
-        self.setFixedSize(120, 482)  # Set fixed size for UI elements
+        self.setFixedSize(120, 600)  # Set fixed size for UI elements (increased for new button)
         # Keep window on top and make it a tool window (not visible in taskbar)
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
 
@@ -1366,7 +1503,8 @@ class ToolWindow(QWidget):
         # Connect tool buttons using their object names from .ui
         pen_btn = self.findChild(QPushButton, "pen_btn")
         if pen_btn:
-            pen_btn.clicked.connect(lambda: self.set_tool("pen"))
+            # Connect to the new select_pen method
+            pen_btn.clicked.connect(self.select_pen)
         else:
             _debug_print("Warning: 'pen_btn' button not found in pen_tool.ui.")
             log_error("UI'da 'pen_btn' butonu bulunamadı.")
@@ -1452,20 +1590,52 @@ class ToolWindow(QWidget):
         self.load_tool_window_colors_from_config()
         # --- KALEM RENKLERİNİ DİNAMİK YÜKLEME SONU ---
 
-        # Connect brush size slider (for pen and shapes)
-        self.brushSizeSlider = self.findChild(QSlider, "horizontalSlider")
-        if self.brushSizeSlider:
-            self.brushSizeSlider.setMinimum(1)
-            self.brushSizeSlider.setMaximum(50)
-            self.brushSizeSlider.setValue(self.paint_window.brush_size)  # Set initial value
-            self.brushSizeSlider.setOrientation(Qt.Horizontal)
-            self.brushSizeSlider.setTickPosition(QSlider.TicksBelow)
-            self.brushSizeSlider.setTickInterval(2)
-            self.brushSizeSlider.valueChanged.connect(self.change_brush_size)
+        # Connect brush size spin box (for pen and shapes)
+        self.brushSizeSpinBox = self.findChild(QSpinBox, "brushSizeSpinBox")
+        if self.brushSizeSpinBox:
+            self.brushSizeSpinBox.setMinimum(1)
+            self.brushSizeSpinBox.setMaximum(50)
+            self.brushSizeSpinBox.setValue(self.paint_window.brush_size)  # Set initial value
+            self.brushSizeSpinBox.valueChanged.connect(self.change_brush_size)
         else:
             _debug_print(
-                "Warning: 'horizontalSlider' not found in pen_tool.ui. Brush size control will be unavailable.")
-            log_error("UI'da 'horizontalSlider' bulunamadı.")
+                "Warning: 'brushSizeSpinBox' not found in pen_tool.ui. Brush size control will be unavailable.")
+            log_error("UI'da 'brushSizeSpinBox' bulunamadı.")
+
+        # Connect pen opacity spin box
+        self.penOpacitySpinBox = self.findChild(QSpinBox, "penOpacitySpinBox")
+        if self.penOpacitySpinBox:
+            self.penOpacitySpinBox.setMinimum(0)  # 0 for fully transparent
+            self.penOpacitySpinBox.setMaximum(255)  # 255 for fully opaque
+            self.penOpacitySpinBox.setValue(self.paint_window.brush_alpha)  # Set initial alpha value
+            self.penOpacitySpinBox.valueChanged.connect(self.change_pen_opacity)
+        else:
+            _debug_print(
+                "Warning: 'penOpacitySpinBox' not found in pen_tool.ui. Pen opacity control will be unavailable.")
+            log_error("UI'da 'penOpacitySpinBox' bulunamadı.")
+
+        # Connect smoothing spin box and checkbox
+        self.smoothingSpinBox = self.findChild(QSpinBox, "smoothingSpinBox")
+        self.smoothing_enable_checkbox = self.findChild(QtWidgets.QCheckBox, "smoothing_enable_checkbox")
+
+        if self.smoothingSpinBox and self.smoothing_enable_checkbox:
+            self.smoothingSpinBox.setMinimum(0)
+            self.smoothingSpinBox.setMaximum(10)
+            self.smoothingSpinBox.setValue(self.paint_window.smoothing_factor)
+            self.smoothingSpinBox.valueChanged.connect(self.change_smoothing_factor)
+
+            # Initialize checkbox state based on current smoothing factor
+            initial_smoothing_enabled = (self.paint_window.smoothing_factor > 0)
+            self.smoothing_enable_checkbox.setChecked(initial_smoothing_enabled)
+            self.smoothingSpinBox.setEnabled(initial_smoothing_enabled)  # Disable if smoothing is off
+
+            self.smoothing_enable_checkbox.toggled.connect(self.toggle_smoothing_enabled)
+        else:
+            _debug_print("Warning: 'smoothingSpinBox' or 'smoothing_enable_checkbox' not found in pen_tool.ui.")
+            log_error("UI'da 'smoothingSpinBox' veya 'smoothing_enable_checkbox' bulunamadı.")
+
+        # Store last non-zero smoothing factor, used when re-enabling
+        self._last_smoothing_factor_value = self.paint_window.smoothing_factor if self.paint_window.smoothing_factor > 0 else 5  # Default to 5 if initial is 0
 
         # Connect eraser size slider (new)
         self.eraserSizeSlider = self.findChild(QSlider, "eraser_slider")  # Assume 'eraser_slider' exists in UI
@@ -1488,6 +1658,38 @@ class ToolWindow(QWidget):
             _debug_print("Warning: 'exit_btn' button not found in pen_tool.ui.")
             log_error("UI'da 'exit_btn' butonu bulunamadı.")
 
+        # --- Çizgi Stili Butonları ---
+        self.solid_line_btn = self.findChild(QPushButton, "solid_line_btn")
+        if self.solid_line_btn:
+            self.solid_line_btn.clicked.connect(lambda: self.paint_window.set_line_style(Qt.SolidLine))
+            # Set a visual indicator for active line style if desired (e.g., border)
+            self.solid_line_btn.setStyleSheet("QPushButton { border: 2px solid blue; }")  # Example active style
+        else:
+            _debug_print("Warning: 'solid_line_btn' not found in pen_tool.ui.")
+
+        self.dash_line_btn = self.findChild(QPushButton, "dash_line_btn")
+        if self.dash_line_btn:
+            self.dash_line_btn.clicked.connect(lambda: self.paint_window.set_line_style(Qt.DashLine))
+        else:
+            _debug_print("Warning: 'dash_line_btn' not found in pen_tool.ui.")
+
+        self.dot_line_btn = self.findChild(QPushButton, "dot_line_btn")
+        if self.dot_line_btn:
+            self.dot_line_btn.clicked.connect(lambda: self.paint_window.set_line_style(Qt.DotLine))
+        else:
+            _debug_print("Warning: 'dot_line_btn' not found in pen_tool.ui.")
+        # --- Çizgi Stili Butonları SONU ---
+
+        # --- Beyaz Tahta Modu Butonu ---
+        self.whiteboard_btn = self.findChild(QPushButton, "whiteboard_btn")
+        if self.whiteboard_btn:
+            self.whiteboard_btn.clicked.connect(self.toggle_whiteboard_mode_in_paint_window)
+            self._update_whiteboard_button_text()  # Set initial text
+        else:
+            _debug_print("Warning: 'whiteboard_btn' not found in pen_tool.ui.")
+            log_error("UI'da 'whiteboard_btn' butonu bulunamadı.")
+        # --- Beyaz Tahta Modu Butonu SONU ---
+
         # Set initial indicator color based on paint_window's current color
         self.set_selected_color_indicator(self.paint_window.brush_color)
 
@@ -1504,7 +1706,7 @@ class ToolWindow(QWidget):
             # Deactivate any buttons that won't be used (if fewer colors than buttons)
             for i in range(len(color_button_names)):
                 btn = self.findChild(QPushButton, color_button_names[i])
-                if btn:
+                if btn:  # Check if the button was successfully found in __init__
                     if i < len(colors):
                         color_str = colors[i]
                         try:
@@ -1558,6 +1760,23 @@ class ToolWindow(QWidget):
         except Exception as e:
             log_error(f"ToolWindow araç ayarlanırken hata: {e}", sys.exc_info())
 
+    def select_pen(self):
+        """
+        Sets the active tool to 'pen' and ensures the brush color is fully opaque (alpha 255).
+        """
+        try:
+            if self.paint_window:
+                self.paint_window.brush_alpha = 255  # Set alpha to fully opaque
+                current_base_color = QColor(self.paint_window.brush_color)
+                current_base_color.setAlpha(255)  # Apply full opacity to current color
+                self.paint_window.set_brush_color(current_base_color)  # Update brush color in paint window
+                self.paint_window.set_tool("pen")  # Set tool to pen
+                self.set_selected_color_indicator(current_base_color)  # Update indicator
+                if self.penOpacitySpinBox:
+                    self.penOpacitySpinBox.setValue(255)  # Sync opacity spin box
+        except Exception as e:
+            log_error(f"Kalem seçilirken hata: {e}", sys.exc_info())
+
     def set_color_and_update_main(self, color):
         """
         Delegates color setting to the parent paint window and updates
@@ -1566,11 +1785,9 @@ class ToolWindow(QWidget):
         """
         try:
             q_color_obj = QColor(color)
-            if self.paint_window and self.paint_window.active_tool != "highlight":
-                # For non-highlighter tools, force the alpha to 255 (fully opaque)
-                q_color_obj.setAlpha(255)
-                # If it's highlight, it will already have its alpha set in select_highlighter,
-            # or it will maintain its alpha if set externally.
+            # When selecting a new color from the palette, apply the current brush_alpha
+            # which is correctly managed by select_pen() and select_highlighter().
+            q_color_obj.setAlpha(self.paint_window.brush_alpha)
 
             if self.paint_window:
                 self.paint_window.set_brush_color(q_color_obj)
@@ -1585,6 +1802,59 @@ class ToolWindow(QWidget):
                 self.paint_window.set_brush_size(value)
         except Exception as e:
             log_error(f"ToolWindow fırça boyutu değiştirilirken hata: {e}", sys.exc_info())
+
+    def change_pen_opacity(self, value):
+        """Delegates pen opacity (alpha) change to the parent paint window."""
+        try:
+            if self.paint_window:
+                self.paint_window.set_brush_alpha(value)
+        except Exception as e:
+            log_error(f"ToolWindow kalem saydamlığı değiştirilirken hata: {e}", sys.exc_info())
+
+    def toggle_smoothing_enabled(self, checked):
+        """Toggles smoothing on/off based on checkbox state."""
+        try:
+            if self.paint_window:
+                self.paint_window.is_smoothing_enabled = checked
+                if self.smoothingSpinBox:
+                    self.smoothingSpinBox.setEnabled(checked)
+
+                if checked:
+                    # When enabling, restore the last used smoothing factor or default if it was 0
+                    if self.paint_window.smoothing_factor == 0:  # If it was off, restore previous non-zero value
+                        self.paint_window.set_smoothing_factor(self._last_smoothing_factor_value)
+                        if self.smoothingSpinBox:
+                            self.smoothingSpinBox.setValue(self._last_smoothing_factor_value)  # Sync spinbox
+                    else:  # If it was already on, just ensure sync
+                        if self.smoothingSpinBox:
+                            self.paint_window.set_smoothing_factor(self.smoothingSpinBox.value())
+
+                else:
+                    # When disabling, store current value and set smoothing to 0
+                    if self.smoothingSpinBox:
+                        self._last_smoothing_factor_value = self.smoothingSpinBox.value()  # Store the current value before setting to 0
+                    self.paint_window.set_smoothing_factor(0)  # Disable smoothing
+                    if self.smoothingSpinBox:
+                        self.smoothingSpinBox.setValue(0)  # Sync spinbox
+            _debug_print(
+                f"Smoothing enabled: {checked}, Current smoothing factor: {self.paint_window.smoothing_factor}")
+        except Exception as e:
+            log_error(f"Düzleştirme etkinleştirme/devre dışı bırakma hatası: {e}", sys.exc_info())
+
+    def change_smoothing_factor(self, value):
+        """Delegates smoothing factor change to the parent paint window and updates stored value."""
+        try:
+            if self.paint_window:
+                # Update the paint window's smoothing factor only if smoothing is enabled
+                if self.paint_window.is_smoothing_enabled:
+                    self.paint_window.set_smoothing_factor(value)
+                    self._last_smoothing_factor_value = value  # Also update the stored value
+                else:
+                    # If smoothing is disabled, we only update the stored value, not the active one
+                    self._last_smoothing_factor_value = value
+            _debug_print(f"Smoothing factor changed to: {value}, Last stored: {self._last_smoothing_factor_value}")
+        except Exception as e:
+            log_error(f"ToolWindow düzleştirme faktörü değiştirilirken hata: {e}", sys.exc_info())
 
     def change_eraser_size(self, value):
         """Delegates eraser size change to the parent paint window."""
@@ -1603,10 +1873,14 @@ class ToolWindow(QWidget):
         try:
             if self.paint_window:
                 current_base_color = QColor(self.paint_window.brush_color)
-                current_base_color.setAlpha(128)  # 50% transparency for highlighter
+                # Force alpha to 51 (approx. 20% transparency) for highlighter when selected
+                current_base_color.setAlpha(51)
                 self.paint_window.set_brush_color(current_base_color)
                 self.paint_window.set_tool("highlight")  # Aracı "highlight" olarak ayarla
                 self.set_selected_color_indicator(current_base_color)  # Update indicator with highlight color
+                # Sync penOpacitySpinBox to highlighter's alpha if it exists
+                if self.penOpacitySpinBox:
+                    self.penOpacitySpinBox.setValue(51)  # Set to 51 (approx 20% transparency) for highlighter
         except Exception as e:
             log_error(f"Highlighter seçilirken hata: {e}", sys.exc_info())
 
@@ -1633,21 +1907,19 @@ class ToolWindow(QWidget):
                     f"ToolWindow._load_auto_saved_drawing: Otomatik kayıt dosyası bulunamadı veya boş: {_AUTO_SAVE_DRAWING_FILE}")
                 return
 
-            with open(_AUTO_SAVE_DRAWING_FILE, 'r', encoding='utf-8') as f:
-                base64_data = f.read()
-            _debug_print(f"ToolWindow._load_auto_saved_drawing ile okunan Base64 veri uzunluğu: {len(base64_data)}")
+            with open(_AUTO_SAVE_DRAWING_FILE, 'rb') as f:  # 'rb' -> read binary
+                png_data_bytes = f.read()
+            _debug_print(f"ToolWindow._load_auto_saved_drawing ile okunan PNG veri uzunluğu: {len(png_data_bytes)}")
 
-            if not base64_data.strip():
+            if not png_data_bytes:
                 QMessageBox.information(self, "Bilgi", "Otomatik kaydedilen çizim dosyası boş.")
                 _debug_print("ToolWindow._load_auto_saved_drawing: Otomatik kaydedilen çizim dosyası boş.")
                 return
 
-            # Decode Base64 data to PNG byte array
-            png_data = QByteArray().fromBase64(base64_data.encode('utf-8'))
-
             loaded_image = QImage()
             # Attempt to load the QImage from the PNG byte array
-            load_success = loaded_image.loadFromData(png_data, "PNG")
+            # No Base64 decoding needed here as it's saved as raw PNG
+            load_success = loaded_image.loadFromData(QByteArray(png_data_bytes), "PNG")
             _debug_print(
                 f"ToolWindow._load_auto_saved_drawing ile loaded_image.loadFromData başarı: {load_success}, isNull: {loaded_image.isNull()}")
 
@@ -1685,6 +1957,26 @@ class ToolWindow(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Hata", f"Otomatik çizim yüklenirken bir hata oluştu: {e}")
             log_error(f"Otomatik çizim yüklenirken hata: {e}", sys.exc_info())
+
+    def toggle_whiteboard_mode_in_paint_window(self):
+        """Calls the toggle_whiteboard_mode method on the parent PaintCanvasWindow and updates button text."""
+        try:
+            if self.paint_window:
+                self.paint_window.toggle_whiteboard_mode()
+                self._update_whiteboard_button_text()
+        except Exception as e:
+            log_error(f"Beyaz tahta modu değiştirilirken hata: {e}", sys.exc_info())
+
+    def _update_whiteboard_button_text(self):
+        """Updates the text of the whiteboard button based on the current mode."""
+        try:
+            if self.whiteboard_btn:
+                if self.paint_window and self.paint_window.whiteboard_mode:
+                    self.whiteboard_btn.setText("Beyaz Tahta Kapat")
+                else:
+                    self.whiteboard_btn.setText("Beyaz Tahta Aç")
+        except Exception as e:
+            log_error(f"Beyaz tahta butonu metni güncellenirken hata: {e}", sys.exc_info())
 
     def closeEvent(self, event):
         """

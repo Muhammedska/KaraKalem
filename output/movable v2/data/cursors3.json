@@ -1,0 +1,16 @@
+{
+  "default": { "image_path": "cursors/arrow.png", "hotspot_x": 0, "hotspot_y": 0, "size": 24 },
+  "pen": { "image_path": "cursors/pen.png", "hotspot_x": 1, "hotspot_y": 20, "size": 32 },
+  "eraser": { "image_path": "cursors/eraser.png", "hotspot_x": 10, "hotspot_y": 10, "size": 32 },
+  "highlight": { "image_path": "cursors/highlighter.png", "hotspot_x": 1, "hotspot_y": 20, "size": 32 },
+  "line": { "image_path": "cursors/crosshair.png", "hotspot_x": 10, "hotspot_y": 10, "size": 32 },
+  "rect": { "image_path": "cursors/crosshair.png", "hotspot_x": 10, "hotspot_y": 10, "size": 32 },
+  "ellipse": { "image_path": "cursors/crosshair.png", "hotspot_x": 10, "hotspot_y": 10, "size": 32 },
+  "move_active": { "image_path": "cursors/closed_hand.png", "hotspot_x": 10, "hotspot_y": 5, "size": 32 },
+  "move_inactive": { "image_path": "cursors/open_hand.png", "hotspot_x": 10, "hotspot_y": 5, "size": 32 },
+  "resize_br": { "image_path": "cursors/resize_diag.png", "hotspot_x": 8, "hotspot_y": 8, "size": 24 },
+  "region_select": { "image_path": "cursors/crosshair.png", "hotspot_x": 10, "hotspot_y": 10, "size": 32 },
+  "text_input": { "image_path": "cursors/ibeam.png", "hotspot_x": 10, "hotspot_y": 10, "size": 24 },
+  "wait": { "image_path": "cursors/wait.png", "hotspot_x": 10, "hotspot_y": 10, "size": 32 },
+  "forbidden": { "image_path": "cursors/forbidden.png", "hotspot_x": 10, "hotspot_y": 10, "size": 32 }
+}
